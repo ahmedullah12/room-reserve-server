@@ -8,5 +8,7 @@ import auth from "../../middlewares/auth";
 const router = Router();
 
 router.post("/",auth("admin"), validateRequest(RoomValidations.createRoomSchemaValidations), RoomController.createRoom);
+router.get("/", RoomController.getAllRoom);
+router.get("/:id", RoomController.getSingleRoom);
 
 export const RoomRoutes = router;

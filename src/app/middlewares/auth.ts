@@ -7,12 +7,16 @@ import { User } from '../modules/User/User.model';
 
 const auth = (...requiredRoles: TRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
+    const fullToken = req.headers.authorization;
+
 
     // check if the token sent or not
-    if (!token) {
+    if (!fullToken) {
       throw new Error('You are not authorized');
     }
+
+    //removing the Bearer from the full token
+    const token = fullToken.split(' ')[1];
 
     const decoded = jwt.verify(
       token,

@@ -6,8 +6,6 @@ import { RoomServices } from "./Room.service";
 const createRoom = catchAsync(async(req, res) => {
     const result = await RoomServices.createRoomIntoDB(req.body);
 
-
-
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -16,6 +14,31 @@ const createRoom = catchAsync(async(req, res) => {
     })
 });
 
+const getAllRoom = catchAsync(async(req, res) => {
+    const result = await RoomServices.getAllRoomFromDB();
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Rooms retrieved successfully",
+        data: result,
+    })
+});
+
+const getSingleRoom = catchAsync(async(req, res) => {
+    const {id} = req.params;
+    const result = await RoomServices.getSingleRoomFromDB(id);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Room retrieved successfully",
+        data: result,
+    })
+})
+
 export const RoomController = {
-    createRoom
+    createRoom,
+    getAllRoom,
+    getSingleRoom
 }
