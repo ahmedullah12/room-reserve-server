@@ -11,4 +11,15 @@ const roomSchema = new Schema<TRoom>({
     isDeleted: {type: Boolean, default: false},
 });
 
+roomSchema.pre("find", async function(next){
+    this.find({isDeleted: {$ne: true}});
+
+    next()
+})
+roomSchema.pre("findOne", async function(next){
+    this.find({isDeleted: {$ne: true}});
+
+    next()
+})
+
 export const Room = model<TRoom>("Room", roomSchema);

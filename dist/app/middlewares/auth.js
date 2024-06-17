@@ -12,15 +12,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateRequest = void 0;
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
-const validateRequest = (schema) => {
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const config_1 = __importDefault(require("../config"));
+const User_model_1 = require("../modules/User/User.model");
+const auth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        yield schema.parseAsync({
-            body: req.body,
-            cookies: req.cookies
-        });
-        return next();
+        const fullToken = req.headers.authorization;
+        // check if the token sent or not
+        if (!fullToken) {
+            throw new Error('You are not authorized');
+        }
+        //removing the Bearer from the full token
+        const token = fullToken.split(' ')[1];
+        const decoded = jsonwebtoken_1.default.verify(token, config_1.default.access_token_secret);
+        const { email, role } = decoded;
+        const user = yield User_model_1.User.isUserExist(email);
+        //checking if the use exists
+        if (!user) {
+            throw new Error('User not found');
+        }
+        if (requiredRoles && !requiredRoles.includes(role)) {
+            throw new Error('You are not authorized');
+        }
+        req.user = decoded;
+        next();
     }));
 };
-exports.validateRequest = validateRequest;
+exports.default = auth;

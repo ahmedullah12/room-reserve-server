@@ -10,5 +10,7 @@ const router = Router();
 router.post("/",auth("admin"), validateRequest(RoomValidations.createRoomSchemaValidations), RoomController.createRoom);
 router.get("/", RoomController.getAllRoom);
 router.get("/:id", RoomController.getSingleRoom);
+router.put("/:id",auth("admin"), validateRequest(RoomValidations.updateRoomSchemaValidations), RoomController.updateRoom)
+router.delete("/:id", auth("admin"), RoomController.deleteRoom);
 
 export const RoomRoutes = router;
