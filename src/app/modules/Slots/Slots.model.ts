@@ -1,22 +1,26 @@
 import { Schema, model } from 'mongoose';
 import { SlotsModel, TSlots } from './Slots.interface';
 
-const slotsSchema = new Schema<TSlots>(
-  {
-    room: {
-      type: Schema.Types.ObjectId,
-      required: true,
-      ref: 'Room',
-    },
-    date: {
-      type: String,
-      required: true,
-    },
-    startTime: { type: String, required: true },
-    endTime: { type: String, required: true },
-    isBooked: { type: Boolean, default: false },
+const slotsSchema = new Schema<TSlots>({
+  room: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    ref: 'Room',
   },
-);
+  date: {
+    type: String,
+    required: true,
+  },
+  startTime: { type: String, required: true },
+  endTime: { type: String, required: true },
+  isBooked: { type: Boolean, default: false },
+});
+
+
+slotsSchema.pre("find", async function(next){
+  this.find({isBooked: {$ne: true}});
+  next();
+})
 
 slotsSchema.statics.validateTimeDifference = async function (payload: TSlots) {
   const { startTime, endTime } = payload;
@@ -35,7 +39,6 @@ slotsSchema.statics.validateTimeDifference = async function (payload: TSlots) {
   // Check if the difference is a whole number between 1 and 24
   return diffHours >= 1 && diffHours <= 24 && Number.isInteger(diffHours);
 };
-
 
 slotsSchema.statics.slosCounts = async function (payload: TSlots) {
   const { startTime, endTime } = payload;

@@ -25,6 +25,12 @@ const slotsSchema = new mongoose_1.Schema({
     endTime: { type: String, required: true },
     isBooked: { type: Boolean, default: false },
 });
+slotsSchema.pre("find", function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.find({ isBooked: { $ne: true } });
+        next();
+    });
+});
 slotsSchema.statics.validateTimeDifference = function (payload) {
     return __awaiter(this, void 0, void 0, function* () {
         const { startTime, endTime } = payload;

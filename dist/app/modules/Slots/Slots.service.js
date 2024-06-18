@@ -45,6 +45,21 @@ const createSlotsIntoDB = (payload) => __awaiter(void 0, void 0, void 0, functio
     const result = createdSlots;
     return result;
 });
+const getAvailableSlotsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const searchCriteria = {};
+    //adding if there is date in query
+    if (query.date) {
+        searchCriteria.date = query.date;
+    }
+    //adding if there is roomId in query
+    if (query.roomId) {
+        searchCriteria.room = query.roomId;
+    }
+    // by default searchCriteria is emply object , so should get all the data
+    const result = yield Slots_model_1.Slot.find(searchCriteria).populate("room");
+    return result;
+});
 exports.SlotsServices = {
     createSlotsIntoDB,
+    getAvailableSlotsFromDB,
 };

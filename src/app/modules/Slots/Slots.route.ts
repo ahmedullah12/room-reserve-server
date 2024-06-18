@@ -8,5 +8,6 @@ import { SlotsController } from "./Slots.controller";
 const router = Router();
 
 router.post("/", auth("admin"), validateRequest(SlotsValidations.createSlotsSchemaValidation), SlotsController.createSlots);
+router.get("/availability", SlotsController.getAvailableSlots)
 
 export const SlotsRoutes = router;

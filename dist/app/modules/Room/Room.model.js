@@ -32,4 +32,5 @@ roomSchema.pre("findOne", function (next) {
         next();
     });
 });
+// have to add isRoomExists and isRoomDeleted
 exports.Room = (0, mongoose_1.model)("Room", roomSchema);

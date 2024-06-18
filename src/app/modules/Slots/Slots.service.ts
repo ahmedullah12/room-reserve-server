@@ -48,6 +48,25 @@ const createSlotsIntoDB = async (payload: TSlots) => {
   return result;
 };
 
+const getAvailableSlotsFromDB = async (query: Record<string, unknown>) => {
+  const searchCriteria: Record<string, unknown> = {};
+
+  //adding if there is date in query
+  if (query.date) {
+    searchCriteria.date = query.date;
+  }
+
+   //adding if there is roomId in query
+  if (query.roomId) {
+    searchCriteria.room = query.roomId;
+  }
+
+  // by default searchCriteria is emply object , so should get all the data
+  const result = await Slot.find(searchCriteria).populate("room");
+  return result;
+};
+
 export const SlotsServices = {
   createSlotsIntoDB,
+  getAvailableSlotsFromDB,
 };

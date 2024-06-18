@@ -20,6 +20,9 @@ roomSchema.pre("findOne", async function(next){
     this.find({isDeleted: {$ne: true}});
 
     next()
-})
+});
+
+// have to add isRoomExists and isRoomDeleted
+
 
 export const Room = model<TRoom>("Room", roomSchema);
