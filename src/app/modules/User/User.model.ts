@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { Schema, model } from 'mongoose';
 import { TUser, UserModel } from './User.interface';
 import bcrypt from 'bcrypt';
@@ -32,6 +34,7 @@ const userSchema = new Schema<TUser>({
 });
 
 userSchema.pre('save', async function (next) {
+  // hashing the password before saving in the database
   this.password = await bcrypt.hash(
     this.password,
     Number(config.bcrypt_salt_round),
@@ -40,15 +43,18 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.set("toJSON", {
+    //not sending the password field
     transform: (doc, {password, ...rest}, option) => rest
 })
 
 
 userSchema.statics.isUserExist = async function (email: string) {
+  //checking if the user exists
   return await User.findOne({ email });
 };
 
 userSchema.statics.isPasswordMatched = async function (
+  //checking if the passwrod match
   plainTextPassword,
   hashPassword,
 ) {

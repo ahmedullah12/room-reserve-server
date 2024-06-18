@@ -24,6 +24,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../config"));
@@ -56,11 +58,13 @@ const userSchema = new mongoose_1.Schema({
 });
 userSchema.pre('save', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
+        // hashing the password before saving in the database
         this.password = yield bcrypt_1.default.hash(this.password, Number(config_1.default.bcrypt_salt_round));
         next();
     });
 });
 userSchema.set("toJSON", {
+    //not sending the password field
     transform: (doc, _a, option) => {
         var { password } = _a, rest = __rest(_a, ["password"]);
         return rest;
@@ -68,10 +72,13 @@ userSchema.set("toJSON", {
 });
 userSchema.statics.isUserExist = function (email) {
     return __awaiter(this, void 0, void 0, function* () {
+        //checking if the user exists
         return yield exports.User.findOne({ email });
     });
 };
-userSchema.statics.isPasswordMatched = function (plainTextPassword, hashPassword) {
+userSchema.statics.isPasswordMatched = function (
+//checking if the passwrod match
+plainTextPassword, hashPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield bcrypt_1.default.compare(plainTextPassword, hashPassword);
     });
