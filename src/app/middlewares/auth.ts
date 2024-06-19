@@ -12,7 +12,7 @@ const auth = (...requiredRoles: TRole[]) => {
 
     // check if the token sent or not
     if (!fullToken) {
-      throw new Error('You are not authorized');
+      throw new Error('You have no access to this route');
     }
 
     //removing the Bearer from the full token
@@ -33,7 +33,7 @@ const auth = (...requiredRoles: TRole[]) => {
     }
 
     if (requiredRoles && !requiredRoles.includes(role)) {
-      throw new Error('You are not authorized');
+      throw new Error('You have no access to this route');
     }
     req.user = decoded as JwtPayload;
     next();

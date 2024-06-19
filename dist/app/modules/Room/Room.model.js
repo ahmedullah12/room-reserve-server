@@ -20,17 +20,37 @@ const roomSchema = new mongoose_1.Schema({
     amenities: { type: [String], required: true },
     isDeleted: { type: Boolean, default: false },
 });
-roomSchema.pre("find", function (next) {
+roomSchema.pre('find', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.find({ isDeleted: { $ne: true } });
         next();
     });
 });
-roomSchema.pre("findOne", function (next) {
+roomSchema.pre('findOne', function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         this.find({ isDeleted: { $ne: true } });
         next();
     });
 });
 // have to add isRoomExists and isRoomDeleted
-exports.Room = (0, mongoose_1.model)("Room", roomSchema);
+roomSchema.statics.isRoomExists = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const room = yield exports.Room.findById(id);
+        return room;
+    });
+};
+roomSchema.statics.isRoomDeleted = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const room = yield exports.Room.findById(id);
+        return !!room && !room.isDeleted;
+    });
+};
+roomSchema.statics.roomPricePerSlot = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const room = yield exports.Room.findById(id);
+        if (room) {
+            return room.pricePerSlot;
+        }
+    });
+};
+exports.Room = (0, mongoose_1.model)('Room', roomSchema);

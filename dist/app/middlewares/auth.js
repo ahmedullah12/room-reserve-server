@@ -21,7 +21,7 @@ const auth = (...requiredRoles) => {
         const fullToken = req.headers.authorization;
         // check if the token sent or not
         if (!fullToken) {
-            throw new Error('You are not authorized');
+            throw new Error('You have no access to this route');
         }
         //removing the Bearer from the full token
         const token = fullToken.split(' ')[1];
@@ -33,7 +33,7 @@ const auth = (...requiredRoles) => {
             throw new Error('User not found');
         }
         if (requiredRoles && !requiredRoles.includes(role)) {
-            throw new Error('You are not authorized');
+            throw new Error('You have no access to this route');
         }
         req.user = decoded;
         next();

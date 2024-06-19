@@ -16,11 +16,12 @@ const slotsSchema = new Schema<TSlots>({
   isBooked: { type: Boolean, default: false },
 });
 
-
-slotsSchema.pre("find", async function(next){
-  this.find({isBooked: {$ne: true}});
+slotsSchema.pre("find", function(next) {
+  if (!this.getOptions().skipIsBookedCheck) {
+    this.find({ isBooked: { $ne: true } });
+  }
   next();
-})
+});
 
 slotsSchema.statics.validateTimeDifference = async function (payload: TSlots) {
   const { startTime, endTime } = payload;
