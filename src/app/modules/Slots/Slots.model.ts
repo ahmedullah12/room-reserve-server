@@ -23,6 +23,12 @@ slotsSchema.pre("find", function(next) {
   next();
 });
 
+slotsSchema.statics.isSlotExists = async function(id: Schema.Types.ObjectId){
+  const slot = await Slot.findById(id);
+  return slot;
+}
+
+
 slotsSchema.statics.validateTimeDifference = async function (payload: TSlots) {
   const { startTime, endTime } = payload;
 

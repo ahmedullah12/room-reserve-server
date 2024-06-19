@@ -21,7 +21,7 @@ const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function
     return result;
 });
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield User_model_1.User.isUserExist(payload.email);
+    const user = yield User_model_1.User.isUserExistByEmail(payload.email);
     if (!user) {
         throw new Error("User not found");
     }

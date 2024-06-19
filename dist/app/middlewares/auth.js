@@ -27,7 +27,7 @@ const auth = (...requiredRoles) => {
         const token = fullToken.split(' ')[1];
         const decoded = jsonwebtoken_1.default.verify(token, config_1.default.access_token_secret);
         const { email, role } = decoded;
-        const user = yield User_model_1.User.isUserExist(email);
+        const user = yield User_model_1.User.isUserExistByEmail(email);
         //checking if the use exists
         if (!user) {
             throw new Error('User not found');

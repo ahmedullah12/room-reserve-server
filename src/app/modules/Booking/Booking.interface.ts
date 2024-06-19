@@ -1,4 +1,5 @@
-import { Types } from 'mongoose';
+/* eslint-disable no-unused-vars */
+import { Model, Types } from 'mongoose';
 import { ConfirmState } from './Booking.constant';
 
 export type TBooking = {
@@ -11,4 +12,6 @@ export type TBooking = {
   isDeleted: boolean;
 };
 
-
+export interface BookingModel extends Model<TBooking> {
+  isBookingExists(id: string): Promise<TBooking>;
+}

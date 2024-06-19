@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export type TRole = 'user' | 'admin';
 
@@ -18,7 +18,8 @@ export type TLoginUser = {
 };
 
 export interface UserModel extends Model<TUser> {
-  isUserExist(email: string): Promise<TUser>;
+  isUserExistByEmail(email: string): Promise<TUser>;
+  isUserExistById(id: Types.ObjectId): Promise<TUser>;
   isPasswordMatched(
     plainTextPassword: string,
     hashPassword: string,

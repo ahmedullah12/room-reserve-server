@@ -1,8 +1,20 @@
+import { Room } from '../Room/Room.model';
 import { TSlotInterval, TSlots } from './Slots.interface';
 import { Slot } from './Slots.model';
 
 const createSlotsIntoDB = async (payload: TSlots) => {
   const { room, date, startTime } = payload;
+
+  const isRoomExists = await Room.isRoomExists(String(room));
+  if(!isRoomExists){
+    throw new Error("Room doesn't exists")
+  };
+  const isRoomDeleted = await Room.isRoomDeleted(String(room));
+  if(!isRoomDeleted){
+    throw new Error("Room doesn't exists")
+  };
+
+
 
   const validateTimeDifference = await Slot.validateTimeDifference(payload);
 

@@ -15,6 +15,7 @@ export type TSlotInterval = {
 }
 
 export interface SlotsModel extends Model<TSlots>{
+    isSlotExists(id: Types.ObjectId): Promise<TSlots>;
     validateTimeDifference(payload: TSlots) : Promise<boolean>;
     slosCounts(payload: TSlots) : Promise<number>;
 }

@@ -18,20 +18,33 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const Room_model_1 = require("../Room/Room.model");
 const Booking_model_1 = require("./Booking.model");
 const Slots_model_1 = require("../Slots/Slots.model");
+const User_model_1 = require("../User/User.model");
 const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { slots } = payload;
+    const { slots, room } = payload;
     //checking if room exists
-    const isRoomExists = yield Room_model_1.Room.isRoomExists(String(payload.room));
+    const isRoomExists = yield Room_model_1.Room.isRoomExists(String(room));
     if (!isRoomExists) {
         throw new Error("Room doesn't exists");
     }
     //checking if the room deleted or not
-    const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(String(payload.room));
+    const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(String(room));
     if (!isRoomDeleted) {
         throw new Error("Room doesn't exists");
     }
+    //checking if user exists or not
+    const isUserExists = yield User_model_1.User.isUserExistById(room);
+    if (!isUserExists) {
+        throw new Error(`User doesn't exists`);
+    }
+    // Checking if each slot exists
+    for (const slotId of slots) {
+        const slotExists = yield Slots_model_1.Slot.isSlotExists(slotId);
+        if (!slotExists) {
+            throw new Error(`Slot ${slotId} doesn't exist`);
+        }
+    }
     //getting the totalAmount for booking
-    const roomPricePerSlot = yield Room_model_1.Room.roomPricePerSlot(String(payload.room));
+    const roomPricePerSlot = yield Room_model_1.Room.roomPricePerSlot(String(room));
     const totalAmount = roomPricePerSlot * payload.slots.length;
     const session = yield mongoose_1.default.startSession();
     try {
@@ -42,12 +55,10 @@ const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, funct
         }
         const newPayload = Object.assign(Object.assign({}, payload), { totalAmount });
         const newBooking = yield Booking_model_1.Booking.create([newPayload], { session });
-        console.log(newBooking);
-        const populatedResult = yield (yield (yield newBooking[0]
-            .populate({ path: 'slots', options: { skipIsBookedCheck: true } }))
-            .populate('room'))
-            .populate('user');
-        console.log(populatedResult);
+        const populatedResult = yield (yield (yield newBooking[0].populate({
+            path: 'slots',
+            options: { skipIsBookedCheck: true },
+        })).populate('room')).populate('user');
         yield session.commitTransaction();
         yield session.endSession();
         return populatedResult;
@@ -60,12 +71,42 @@ const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, funct
 });
 const getAllBookingsFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Booking_model_1.Booking.find()
-        .populate('slots')
+        .populate({
+        path: 'slots',
+        options: { skipIsBookedCheck: true },
+    })
         .populate('room')
         .populate('user');
+    return result;
+});
+const getUsersBookingsFromDB = (user) => {
+    console.log(user);
+};
+const updateBookingIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    //checking if booking exists
+    const isBookingExists = yield Booking_model_1.Booking.isBookingExists(id);
+    if (!isBookingExists) {
+        throw new Error("Booking doesn't exists");
+    }
+    const result = yield Booking_model_1.Booking.findByIdAndUpdate(id, payload, {
+        new: true,
+        runValidators: true,
+    });
+    return result;
+});
+const deleteBookingFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    //checking if booking exists
+    const isBookingExists = yield Booking_model_1.Booking.isBookingExists(id);
+    if (!isBookingExists) {
+        throw new Error("Booking doesn't exists");
+    }
+    const result = yield Booking_model_1.Booking.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     return result;
 });
 exports.BookingServices = {
     createBookingIntoDB,
     getAllBookingsFromDB,
+    getUsersBookingsFromDB,
+    updateBookingIntoDB,
+    deleteBookingFromDB,
 };

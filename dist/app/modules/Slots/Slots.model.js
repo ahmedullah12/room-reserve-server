@@ -31,6 +31,12 @@ slotsSchema.pre("find", function (next) {
     }
     next();
 });
+slotsSchema.statics.isSlotExists = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const slot = yield exports.Slot.findById(id);
+        return slot;
+    });
+};
 slotsSchema.statics.validateTimeDifference = function (payload) {
     return __awaiter(this, void 0, void 0, function* () {
         const { startTime, endTime } = payload;

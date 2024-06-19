@@ -10,9 +10,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SlotsServices = void 0;
+const Room_model_1 = require("../Room/Room.model");
 const Slots_model_1 = require("./Slots.model");
 const createSlotsIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { room, date, startTime } = payload;
+    const isRoomExists = yield Room_model_1.Room.isRoomExists(String(room));
+    if (!isRoomExists) {
+        throw new Error("Room doesn't exists");
+    }
+    ;
+    const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(String(room));
+    if (!isRoomDeleted) {
+        throw new Error("Room doesn't exists");
+    }
+    ;
     const validateTimeDifference = yield Slots_model_1.Slot.validateTimeDifference(payload);
     if (!validateTimeDifference) {
         throw new Error('Invalid time difference. The difference between startTime and endTime should be a whole number of hours');

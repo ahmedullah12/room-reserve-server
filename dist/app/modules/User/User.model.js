@@ -70,10 +70,16 @@ userSchema.set("toJSON", {
         return rest;
     }
 });
-userSchema.statics.isUserExist = function (email) {
+//checking if the user exists with email
+userSchema.statics.isUserExistByEmail = function (email) {
     return __awaiter(this, void 0, void 0, function* () {
-        //checking if the user exists
         return yield exports.User.findOne({ email });
+    });
+};
+//checking if the user exists with id
+userSchema.statics.isUserExistById = function (id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield exports.User.findById(id);
     });
 };
 userSchema.statics.isPasswordMatched = function (

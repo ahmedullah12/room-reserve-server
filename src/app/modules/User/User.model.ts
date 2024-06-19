@@ -48,9 +48,14 @@ userSchema.set("toJSON", {
 })
 
 
-userSchema.statics.isUserExist = async function (email: string) {
-  //checking if the user exists
+//checking if the user exists with email
+userSchema.statics.isUserExistByEmail = async function (email: string) {
   return await User.findOne({ email });
+};
+
+//checking if the user exists with id
+userSchema.statics.isUserExistById = async function (id: Schema.Types.ObjectId) {
+  return await User.findById(id);
 };
 
 userSchema.statics.isPasswordMatched = async function (
