@@ -16,12 +16,20 @@ const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const config_1 = __importDefault(require("../config"));
 const User_model_1 = require("../modules/User/User.model");
+const AppError_1 = __importDefault(require("../error/AppError"));
+const http_status_1 = __importDefault(require("http-status"));
 const auth = (...requiredRoles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         const fullToken = req.headers.authorization;
         // check if the token sent or not
         if (!fullToken) {
-            throw new Error('You have no access to this route');
+            return res
+                .status(http_status_1.default.UNAUTHORIZED)
+                .json({
+                success: false,
+                statusCode: http_status_1.default.UNAUTHORIZED,
+                message: 'You have no access to this route',
+            });
         }
         //removing the Bearer from the full token
         const token = fullToken.split(' ')[1];
@@ -30,10 +38,16 @@ const auth = (...requiredRoles) => {
         const user = yield User_model_1.User.isUserExistByEmail(email);
         //checking if the use exists
         if (!user) {
-            throw new Error('User not found');
+            throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
         }
         if (requiredRoles && !requiredRoles.includes(role)) {
-            throw new Error('You have no access to this route');
+            return res
+                .status(http_status_1.default.UNAUTHORIZED)
+                .json({
+                success: false,
+                statusCode: http_status_1.default.UNAUTHORIZED,
+                message: 'You have no access to this route',
+            });
         }
         req.user = decoded;
         next();
