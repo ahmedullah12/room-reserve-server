@@ -26,17 +26,7 @@ const getAllBooking = catchAsync(async(req ,res) => {
     })
 });
 
-const getUsersBookings = catchAsync(async(req, res) => {
 
-    const result = await BookingServices.getUsersBookingsFromDB(req.user);
-
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "User bookings retrieved successfully",
-        data: result,
-    })
-})
 
 const updateBooking = catchAsync(async(req, res) => {
     const {id} = req.params;
@@ -65,7 +55,6 @@ const deleteBooking = catchAsync(async(req, res) => {
 export const BookingController = {
     createBooking,
     getAllBooking,
-    getUsersBookings,
     updateBooking,
     deleteBooking
 }

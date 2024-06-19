@@ -79,9 +79,6 @@ const getAllBookingsFromDB = () => __awaiter(void 0, void 0, void 0, function* (
         .populate('user');
     return result;
 });
-const getUsersBookingsFromDB = (user) => {
-    console.log(user);
-};
 const updateBookingIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     //checking if booking exists
     const isBookingExists = yield Booking_model_1.Booking.isBookingExists(id);
@@ -106,7 +103,6 @@ const deleteBookingFromDB = (id) => __awaiter(void 0, void 0, void 0, function* 
 exports.BookingServices = {
     createBookingIntoDB,
     getAllBookingsFromDB,
-    getUsersBookingsFromDB,
     updateBookingIntoDB,
     deleteBookingFromDB,
 };

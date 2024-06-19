@@ -5,7 +5,6 @@ import { TBooking } from './Booking.interface';
 import { Booking } from './Booking.model';
 import { Slot } from '../Slots/Slots.model';
 import { User } from '../User/User.model';
-import { JwtPayload } from 'jsonwebtoken';
 
 const createBookingIntoDB = async (payload: TBooking) => {
   const { slots, room } = payload;
@@ -88,9 +87,7 @@ const getAllBookingsFromDB = async () => {
   return result;
 };
 
-const getUsersBookingsFromDB = (user: JwtPayload) => {
-  console.log(user);
-};
+
 
 const updateBookingIntoDB = async (id: string, payload: Partial<TBooking>) => {
   //checking if booking exists
@@ -121,7 +118,6 @@ const deleteBookingFromDB = async (id: string) => {
 export const BookingServices = {
   createBookingIntoDB,
   getAllBookingsFromDB,
-  getUsersBookingsFromDB,
   updateBookingIntoDB,
   deleteBookingFromDB,
 };
