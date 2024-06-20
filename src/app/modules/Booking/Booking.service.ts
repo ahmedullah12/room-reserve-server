@@ -5,32 +5,34 @@ import { TBooking } from './Booking.interface';
 import { Booking } from './Booking.model';
 import { Slot } from '../Slots/Slots.model';
 import { User } from '../User/User.model';
+import AppError from '../../error/AppError';
+import httpStatus from 'http-status';
 
 const createBookingIntoDB = async (payload: TBooking) => {
-  const { slots, room } = payload;
+  const { slots, room, user } = payload;
   //checking if room exists
   const isRoomExists = await Room.isRoomExists(String(room));
   if (!isRoomExists) {
-    throw new Error("Room doesn't exists");
+    throw new AppError(httpStatus.NOT_FOUND, "Room doesn't exists");
   }
 
   //checking if the room deleted or not
   const isRoomDeleted = await Room.isRoomDeleted(String(room));
   if (!isRoomDeleted) {
-    throw new Error("Room doesn't exists");
+    throw new AppError(httpStatus.NOT_FOUND, "Room doesn't exists");
   }
 
   //checking if user exists or not
-  const isUserExists = await User.isUserExistById(room);
+  const isUserExists = await User.isUserExistById(user);
   if (!isUserExists) {
-    throw new Error(`User doesn't exists`);
+    throw new AppError(httpStatus.NOT_FOUND, `User doesn't exists`);
   }
 
   // Checking if each slot exists
   for (const slotId of slots) {
     const slotExists = await Slot.isSlotExists(slotId);
     if (!slotExists) {
-      throw new Error(`Slot ${slotId} doesn't exist`);
+      throw new AppError(httpStatus.NOT_FOUND, `Slot ${slotId} doesn't exist`);
     }
   }
 

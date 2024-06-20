@@ -28,11 +28,12 @@ const createSlots = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
 }));
 const getAvailableSlots = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Slots_service_1.SlotsServices.getAvailableSlotsFromDB(req.query);
+    const isResult = result.length > 0;
     (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "Available slots retrieved successfully",
-        data: result,
+        statusCode: isResult ? http_status_1.default.OK : http_status_1.default.NOT_FOUND,
+        success: isResult ? true : false,
+        message: isResult ? "Available slots retrieved successfully" : "No Data Found",
+        data: result || [],
     });
 }));
 exports.SlotsController = {

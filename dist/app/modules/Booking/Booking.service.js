@@ -19,28 +19,30 @@ const Room_model_1 = require("../Room/Room.model");
 const Booking_model_1 = require("./Booking.model");
 const Slots_model_1 = require("../Slots/Slots.model");
 const User_model_1 = require("../User/User.model");
+const AppError_1 = __importDefault(require("../../error/AppError"));
+const http_status_1 = __importDefault(require("http-status"));
 const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { slots, room } = payload;
+    const { slots, room, user } = payload;
     //checking if room exists
     const isRoomExists = yield Room_model_1.Room.isRoomExists(String(room));
     if (!isRoomExists) {
-        throw new Error("Room doesn't exists");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Room doesn't exists");
     }
     //checking if the room deleted or not
     const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(String(room));
     if (!isRoomDeleted) {
-        throw new Error("Room doesn't exists");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Room doesn't exists");
     }
     //checking if user exists or not
-    const isUserExists = yield User_model_1.User.isUserExistById(room);
+    const isUserExists = yield User_model_1.User.isUserExistById(user);
     if (!isUserExists) {
-        throw new Error(`User doesn't exists`);
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, `User doesn't exists`);
     }
     // Checking if each slot exists
     for (const slotId of slots) {
         const slotExists = yield Slots_model_1.Slot.isSlotExists(slotId);
         if (!slotExists) {
-            throw new Error(`Slot ${slotId} doesn't exist`);
+            throw new AppError_1.default(http_status_1.default.NOT_FOUND, `Slot ${slotId} doesn't exist`);
         }
     }
     //getting the totalAmount for booking

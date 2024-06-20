@@ -17,11 +17,13 @@ const createRoom = catchAsync(async (req, res) => {
 const getAllRoom = catchAsync(async (req, res) => {
   const result = await RoomServices.getAllRoomFromDB();
 
+  const isResult = result.length > 0;
+
   sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Rooms retrieved successfully',
-    data: result,
+    statusCode: isResult ? httpStatus.OK : httpStatus.NOT_FOUND,
+    success: isResult ? true : false,
+    message: isResult ? 'Rooms retrieved successfully' : "No Data Found",
+    data: result || [],
   });
 });
 
@@ -29,11 +31,13 @@ const getSingleRoom = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await RoomServices.getSingleRoomFromDB(id);
 
+  
+
   sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Room retrieved successfully',
-    data: result,
+    statusCode:  result ? httpStatus.OK : httpStatus.NOT_FOUND,
+    success: result ? true : false,
+    message: result ? 'Room retrieved successfully' : "No Data Found",
+    data: result || [],
   });
 });
 

@@ -18,11 +18,13 @@ const createBooking = catchAsync(async(req ,res) => {
 const getAllBooking = catchAsync(async(req ,res) => {
     const result = await BookingServices.getAllBookingsFromDB();
 
+    const isResult = result.length > 0;
+
     sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "All bookings retrieved successfully", 
-        data: result,
+        statusCode: isResult ? httpStatus.OK : httpStatus.NOT_FOUND,
+        success:  isResult ? true : false,
+        message:  isResult ? "All bookings retrieved successfully" : "No Data Found", 
+        data: result || [],
     })
 });
 
