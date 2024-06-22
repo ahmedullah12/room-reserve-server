@@ -6,15 +6,24 @@ const bookingSchema = new Schema<TBooking>({
   slots: [{ type: Schema.Types.ObjectId, ref: 'Slot', required: true }],
   room: { type: Schema.Types.ObjectId, ref: 'Room', required: true },
   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  totalAmount: {type: Number, required: true},
-  isConfirmed: {type: String, enum: ["confirmed", "unconfirmed", "canceled"], default: "unconfirmed"},
-  isDeleted: {type: Boolean, default: false},
+  totalAmount: { type: Number, required: true },
+  isConfirmed: {
+    type: String,
+    enum: ['confirmed', 'unconfirmed', 'canceled'],
+    default: 'unconfirmed',
+  },
+  isDeleted: { type: Boolean, default: false },
 });
 
+bookingSchema.pre('find', async function (next) {
+  this.find({ isDeleted: { $ne: true } });
 
-bookingSchema.statics.isBookingExists = async function(id: string){
+  next();
+});
+
+bookingSchema.statics.isBookingExists = async function (id: string) {
   const result = await Booking.findById(id);
   return result;
-}
+};
 
-export const Booking = model<TBooking, BookingModel>("Booking", bookingSchema);
+export const Booking = model<TBooking, BookingModel>('Booking', bookingSchema);

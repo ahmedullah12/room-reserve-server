@@ -17,8 +17,18 @@ const bookingSchema = new mongoose_1.Schema({
     room: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Room', required: true },
     user: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     totalAmount: { type: Number, required: true },
-    isConfirmed: { type: String, enum: ["confirmed", "unconfirmed", "canceled"], default: "unconfirmed" },
+    isConfirmed: {
+        type: String,
+        enum: ['confirmed', 'unconfirmed', 'canceled'],
+        default: 'unconfirmed',
+    },
     isDeleted: { type: Boolean, default: false },
+});
+bookingSchema.pre('find', function (next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        this.find({ isDeleted: { $ne: true } });
+        next();
+    });
 });
 bookingSchema.statics.isBookingExists = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -26,4 +36,4 @@ bookingSchema.statics.isBookingExists = function (id) {
         return result;
     });
 };
-exports.Booking = (0, mongoose_1.model)("Booking", bookingSchema);
+exports.Booking = (0, mongoose_1.model)('Booking', bookingSchema);
