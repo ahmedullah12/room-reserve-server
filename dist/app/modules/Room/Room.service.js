@@ -8,8 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RoomServices = void 0;
+const http_status_1 = __importDefault(require("http-status"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
 const Room_model_1 = require("./Room.model");
 const createRoomIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Room_model_1.Room.create(payload);
@@ -24,10 +29,31 @@ const getSingleRoomFromDB = (id) => __awaiter(void 0, void 0, void 0, function* 
     return result;
 });
 const updateRoomIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Room_model_1.Room.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
+    //checking if room exists
+    const isRoomExists = yield Room_model_1.Room.isRoomExists(id);
+    if (!isRoomExists) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Room not found');
+    }
+    const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(id);
+    if (!isRoomDeleted) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Room not found');
+    }
+    const result = yield Room_model_1.Room.findByIdAndUpdate(id, payload, {
+        new: true,
+        runValidators: true,
+    });
     return result;
 });
 const deleteRoomFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    //checking if room exists
+    const isRoomExists = yield Room_model_1.Room.isRoomExists(id);
+    if (!isRoomExists) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Room not found');
+    }
+    const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(id);
+    if (!isRoomDeleted) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Room not found');
+    }
     const result = yield Room_model_1.Room.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     return result;
 });
@@ -36,5 +62,5 @@ exports.RoomServices = {
     getAllRoomFromDB,
     getSingleRoomFromDB,
     updateRoomIntoDB,
-    deleteRoomFromDB
+    deleteRoomFromDB,
 };
