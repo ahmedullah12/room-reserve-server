@@ -13,7 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserServices = void 0;
+const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../config"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
 const User_model_1 = require("./User.model");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -23,12 +25,12 @@ const createUserIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_model_1.User.isUserExistByEmail(payload.email);
     if (!user) {
-        throw new Error("User not found");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
     }
     ;
     const isPasswordMatch = yield User_model_1.User.isPasswordMatched(payload.password, user === null || user === void 0 ? void 0 : user.password);
     if (!isPasswordMatch) {
-        throw new Error("Password doesn't match");
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Password doesn't match");
     }
     const jwtPayload = {
         email: user === null || user === void 0 ? void 0 : user.email,

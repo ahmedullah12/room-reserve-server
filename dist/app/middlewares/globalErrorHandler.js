@@ -18,8 +18,7 @@ const globalErrorHandler = (err, req, res, next) => {
             message: 'Something went wrong',
         },
     ];
-    console.log(err);
-    //find if zod error
+    //checking the type or errro and sending response based on that
     if (err instanceof zod_1.ZodError) {
         const simplifiedError = (0, handleZodError_1.default)(err);
         statusCode = simplifiedError.statusCode;

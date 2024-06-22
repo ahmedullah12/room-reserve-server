@@ -8,25 +8,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SlotsServices = void 0;
+const http_status_1 = __importDefault(require("http-status"));
+const AppError_1 = __importDefault(require("../../error/AppError"));
 const Room_model_1 = require("../Room/Room.model");
 const Slots_model_1 = require("./Slots.model");
 const createSlotsIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { room, date, startTime } = payload;
+    //checking if room exists
     const isRoomExists = yield Room_model_1.Room.isRoomExists(String(room));
     if (!isRoomExists) {
-        throw new Error("Room doesn't exists");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Room doesn't exists");
     }
     ;
     const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(String(room));
     if (!isRoomDeleted) {
-        throw new Error("Room doesn't exists");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Room doesn't exists");
     }
     ;
     const validateTimeDifference = yield Slots_model_1.Slot.validateTimeDifference(payload);
     if (!validateTimeDifference) {
-        throw new Error('Invalid time difference. The difference between startTime and endTime should be a whole number of hours');
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid time difference. The difference between startTime and endTime should be a whole number of hours');
     }
     // getting the slots counts
     const slotsCounts = yield Slots_model_1.Slot.slosCounts(payload);

@@ -52,7 +52,7 @@ const createBookingIntoDB = async (payload: TBooking) => {
     );
 
     if (!updateSlots) {
-      throw new Error('Failed to booked the slots');
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to booked the slots');
     }
 
     const newPayload = { ...payload, totalAmount };
@@ -95,7 +95,7 @@ const updateBookingIntoDB = async (id: string, payload: Partial<TBooking>) => {
   //checking if booking exists
   const isBookingExists = await Booking.isBookingExists(id);
   if (!isBookingExists) {
-    throw new Error("Booking doesn't exists");
+    throw new AppError(httpStatus.NOT_FOUND, "Booking doesn't exists");
   }
 
   const result = await Booking.findByIdAndUpdate(id, payload, {
@@ -109,7 +109,7 @@ const deleteBookingFromDB = async (id: string) => {
   //checking if booking exists
   const isBookingExists = await Booking.isBookingExists(id);
   if (!isBookingExists) {
-    throw new Error("Booking doesn't exists");
+    throw new AppError(httpStatus.NOT_FOUND, "Booking doesn't exists");
   }
 
   const result = await Booking.findByIdAndUpdate(id, { isDeleted: true }, {new: true});

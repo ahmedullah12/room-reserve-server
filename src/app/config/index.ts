@@ -1,5 +1,3 @@
-// directly address korar jonno index.ts name dawa hoise
-// automatic refer
 import dotenv from 'dotenv';
 dotenv.config();
 

@@ -1,3 +1,5 @@
+import httpStatus from 'http-status';
+import AppError from '../../error/AppError';
 import { Room } from '../Room/Room.model';
 import { TSlotInterval, TSlots } from './Slots.interface';
 import { Slot } from './Slots.model';
@@ -5,13 +7,15 @@ import { Slot } from './Slots.model';
 const createSlotsIntoDB = async (payload: TSlots) => {
   const { room, date, startTime } = payload;
 
+
+  //checking if room exists
   const isRoomExists = await Room.isRoomExists(String(room));
   if(!isRoomExists){
-    throw new Error("Room doesn't exists")
+    throw new AppError(httpStatus.NOT_FOUND, "Room doesn't exists")
   };
   const isRoomDeleted = await Room.isRoomDeleted(String(room));
   if(!isRoomDeleted){
-    throw new Error("Room doesn't exists")
+    throw new AppError(httpStatus.NOT_FOUND, "Room doesn't exists")
   };
 
 
@@ -19,7 +23,7 @@ const createSlotsIntoDB = async (payload: TSlots) => {
   const validateTimeDifference = await Slot.validateTimeDifference(payload);
 
   if (!validateTimeDifference) {
-    throw new Error(
+    throw new AppError(httpStatus.BAD_REQUEST, 
       'Invalid time difference. The difference between startTime and endTime should be a whole number of hours',
     );
   }

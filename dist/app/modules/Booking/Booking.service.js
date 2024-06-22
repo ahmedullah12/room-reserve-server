@@ -53,7 +53,7 @@ const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, funct
         session.startTransaction();
         const updateSlots = yield Slots_model_1.Slot.updateMany({ _id: { $in: slots } }, { $set: { isBooked: true } }, { session });
         if (!updateSlots) {
-            throw new Error('Failed to booked the slots');
+            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to booked the slots');
         }
         const newPayload = Object.assign(Object.assign({}, payload), { totalAmount });
         const newBooking = yield Booking_model_1.Booking.create([newPayload], { session });
@@ -85,7 +85,7 @@ const updateBookingIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, f
     //checking if booking exists
     const isBookingExists = yield Booking_model_1.Booking.isBookingExists(id);
     if (!isBookingExists) {
-        throw new Error("Booking doesn't exists");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Booking doesn't exists");
     }
     const result = yield Booking_model_1.Booking.findByIdAndUpdate(id, payload, {
         new: true,
@@ -97,7 +97,7 @@ const deleteBookingFromDB = (id) => __awaiter(void 0, void 0, void 0, function* 
     //checking if booking exists
     const isBookingExists = yield Booking_model_1.Booking.isBookingExists(id);
     if (!isBookingExists) {
-        throw new Error("Booking doesn't exists");
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Booking doesn't exists");
     }
     const result = yield Booking_model_1.Booking.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     return result;
