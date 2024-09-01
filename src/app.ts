@@ -3,13 +3,19 @@ import cors from 'cors';
 import router from './app/routes';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
+import cookieParser from "cookie-parser";
+import path from "path"
 
 const app = express();
 
 //middlewares
 app.use(express.json());
-app.use(cors());
-app.use("/api", router)
+app.use(express.static(path.join(__dirname, "../public")))
+app.use(cookieParser());
+app.use(cors({ origin: ['http://localhost:5173', "https://roomreservee.netlify.app"], credentials: true }));
+
+
+app.use('/api', router);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Server Running!');

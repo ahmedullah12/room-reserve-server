@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
 import { Schema, model } from 'mongoose';
-import { TUser, UserModel } from './User.interface';
 import bcrypt from 'bcrypt';
 import config from '../../config';
+import { TUser, UserModel } from './User.interface';
 
 const userSchema = new Schema<TUser>({
   name: {
@@ -42,11 +42,10 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.set("toJSON", {
-    //not sending the password field
-    transform: (doc, {password, ...rest}, option) => rest
-})
-
+userSchema.set('toJSON', {
+  //not sending the password field
+  transform: (doc, { password, ...rest }, option) => rest,
+});
 
 //checking if the user exists with email
 userSchema.statics.isUserExistByEmail = async function (email: string) {
@@ -54,7 +53,9 @@ userSchema.statics.isUserExistByEmail = async function (email: string) {
 };
 
 //checking if the user exists with id
-userSchema.statics.isUserExistById = async function (id: Schema.Types.ObjectId) {
+userSchema.statics.isUserExistById = async function (
+  id: Schema.Types.ObjectId,
+) {
   return await User.findById(id);
 };
 

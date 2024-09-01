@@ -22,18 +22,37 @@ const createBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Booking created successfully",
+        message: 'Booking created successfully',
+        data: result,
+    });
+}));
+const confirmBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { bookingId } = req.params;
+    const result = yield Booking_service_1.BookingServices.confirmBooking(bookingId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Payment started successfully!!',
         data: result,
     });
 }));
 const getAllBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Booking_service_1.BookingServices.getAllBookingsFromDB();
-    const isResult = result.length > 0;
     (0, sendResponse_1.default)(res, {
-        statusCode: isResult ? http_status_1.default.OK : http_status_1.default.NOT_FOUND,
-        success: isResult ? true : false,
-        message: isResult ? "All bookings retrieved successfully" : "No Data Found",
-        data: result || [],
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'All bookings retrieved successfully',
+        data: result,
+    });
+}));
+const getSingleBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield Booking_service_1.BookingServices.getSingleBookingFromDB(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'All bookings retrieved successfully',
+        data: result,
     });
 }));
 const updateBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,7 +61,7 @@ const updateBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Booking updated successfully",
+        message: 'Booking updated successfully',
         data: result,
     });
 }));
@@ -52,13 +71,48 @@ const deleteBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Booking deleted successfully",
+        message: 'Booking deleted successfully',
+        data: result,
+    });
+}));
+const cancelBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield Booking_service_1.BookingServices.cancelBookingFromDB(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Booking cancelled successfully',
+        data: result,
+    });
+}));
+const approveBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield Booking_service_1.BookingServices.approveBooking(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Booking approved successfully',
+        data: result,
+    });
+}));
+const rejectBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield Booking_service_1.BookingServices.rejectBooking(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Booking rejected successfully',
         data: result,
     });
 }));
 exports.BookingController = {
     createBooking,
     getAllBooking,
+    confirmBooking,
+    getSingleBooking,
     updateBooking,
-    deleteBooking
+    deleteBooking,
+    cancelBooking,
+    approveBooking,
+    rejectBooking,
 };

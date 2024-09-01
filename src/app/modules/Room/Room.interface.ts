@@ -7,6 +7,7 @@ export type TRoom = {
   floorNo: number;
   capacity: number;
   pricePerSlot: number;
+  images: string[];
   amenities: string[];
   isDeleted: boolean;
 };

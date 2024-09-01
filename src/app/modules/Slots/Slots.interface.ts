@@ -7,6 +7,7 @@ export type TSlots = {
   startTime: string;
   endTime: string;
   isBooked: boolean;
+  isDeleted: boolean;
 };
 
 export type TSlotInterval = {
@@ -15,7 +16,7 @@ export type TSlotInterval = {
 }
 
 export interface SlotsModel extends Model<TSlots>{
-    isSlotExists(id: Types.ObjectId): Promise<TSlots>;
+    isSlotExists(id: string): Promise<TSlots>;
     validateTimeDifference(payload: TSlots) : Promise<boolean>;
-    slosCounts(payload: TSlots) : Promise<number>;
+    slotsCounts(payload: TSlots) : Promise<number>;
 }

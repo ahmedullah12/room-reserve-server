@@ -12,23 +12,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Booking = void 0;
 const mongoose_1 = require("mongoose");
 const bookingSchema = new mongoose_1.Schema({
+    userId: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    roomName: { type: String, required: true },
+    time: [{ type: String, required: true }],
     date: { type: String, required: true },
     slots: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Slot', required: true }],
     room: { type: mongoose_1.Schema.Types.ObjectId, ref: 'Room', required: true },
-    user: { type: mongoose_1.Schema.Types.ObjectId, ref: 'User', required: true },
     totalAmount: { type: Number, required: true },
     isConfirmed: {
         type: String,
         enum: ['confirmed', 'unconfirmed', 'canceled'],
         default: 'unconfirmed',
     },
+    isRejected: { type: Boolean, default: false },
     isDeleted: { type: Boolean, default: false },
-});
-bookingSchema.pre('find', function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        this.find({ isDeleted: { $ne: true } });
-        next();
-    });
 });
 bookingSchema.statics.isBookingExists = function (id) {
     return __awaiter(this, void 0, void 0, function* () {

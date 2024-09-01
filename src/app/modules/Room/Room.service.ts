@@ -2,6 +2,9 @@ import httpStatus from 'http-status';
 import AppError from '../../error/AppError';
 import { TRoom } from './Room.interface';
 import { Room } from './Room.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+
+const searchableFields = ['name', 'roomNo', 'floorNo'];
 
 const createRoomIntoDB = async (payload: TRoom) => {
   const result = await Room.create(payload);
@@ -9,8 +12,12 @@ const createRoomIntoDB = async (payload: TRoom) => {
   return result;
 };
 
-const getAllRoomFromDB = async () => {
-  const result = await Room.find();
+const getAllRoomFromDB = async (query: Record<string, unknown>) => {
+  const roomQuery = new QueryBuilder(Room.find(), query)
+    .search(searchableFields)
+    .filter()
+    .sort();
+  const result = await roomQuery.modelQuery;
 
   return result;
 };

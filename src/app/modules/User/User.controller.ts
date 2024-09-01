@@ -1,35 +1,44 @@
+import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { UserServices } from "./User.service";
-import httpStatus from "http-status"
+import { UserServices } from "./User.services";
 
 
-const createUser = catchAsync(async(req, res) => {
-    const result = await UserServices.createUserIntoDB(req.body);
+const getAllUser = catchAsync(async(req, res) => {
+    const result = await UserServices.getAllUser();
 
-    
     sendResponse(res, {
-        success: true,
         statusCode: httpStatus.OK,
-        message: "User registered successfully",
+        success: true,
+        message: "Users data retrieved",
+        data: result,
+    })
+});
+const getUser = catchAsync(async(req, res) => {
+    const {email} = req.query;
+    const result = await UserServices.getUserData(email as string);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User data retrieved",
+        data: result,
+    })
+});
+const makeAdmin = catchAsync(async(req, res) => {
+    const {id} = req.params;
+    const result = await UserServices.makeAdmin(id as string);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Admin created!!!",
         data: result,
     })
 });
 
-const loginUser = catchAsync(async(req, res) => {
-    const result = await UserServices.loginUser(req.body);
-    const {accessToken, user} = result;
-
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        token: accessToken,
-        message: "User logged in successfully",
-        data: user
-    })
-})
-
-export const  UserController = {
-    createUser,
-    loginUser,
+export const UserController = {
+    getAllUser,
+    getUser,
+    makeAdmin
 }

@@ -18,7 +18,16 @@ const loginSchemaValidation = z.object({
   })
 });
 
-export const UserValidations = {
+const refreshTokenValidationSchema = z.object({
+  cookies: z.object({
+    refreshToken: z.string({
+      required_error: 'Refresh token is required!',
+    }),
+  }),
+});
+
+export const AuthValidations = {
   createUserSchemaValidation,
-  loginSchemaValidation
+  loginSchemaValidation,
+  refreshTokenValidationSchema
 };

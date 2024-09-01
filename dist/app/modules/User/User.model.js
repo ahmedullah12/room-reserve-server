@@ -63,12 +63,12 @@ userSchema.pre('save', function (next) {
         next();
     });
 });
-userSchema.set("toJSON", {
+userSchema.set('toJSON', {
     //not sending the password field
     transform: (doc, _a, option) => {
         var { password } = _a, rest = __rest(_a, ["password"]);
         return rest;
-    }
+    },
 });
 //checking if the user exists with email
 userSchema.statics.isUserExistByEmail = function (email) {

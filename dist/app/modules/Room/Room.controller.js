@@ -27,13 +27,12 @@ const createRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const getAllRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Room_service_1.RoomServices.getAllRoomFromDB();
-    const isResult = result.length > 0;
+    const result = yield Room_service_1.RoomServices.getAllRoomFromDB(req.query);
     (0, sendResponse_1.default)(res, {
-        statusCode: isResult ? http_status_1.default.OK : http_status_1.default.NOT_FOUND,
-        success: isResult ? true : false,
-        message: isResult ? 'Rooms retrieved successfully' : "No Data Found",
-        data: result || [],
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Rooms retrieved successfully',
+        data: result,
     });
 }));
 const getSingleRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -42,7 +41,7 @@ const getSingleRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     (0, sendResponse_1.default)(res, {
         statusCode: result ? http_status_1.default.OK : http_status_1.default.NOT_FOUND,
         success: result ? true : false,
-        message: result ? 'Room retrieved successfully' : "No Data Found",
+        message: result ? 'Room retrieved successfully' : 'No Data Found',
         data: result || [],
     });
 }));
@@ -62,7 +61,7 @@ const deleteRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Room deleted successfully",
+        message: 'Room deleted successfully',
         data: result,
     });
 }));
@@ -71,5 +70,5 @@ exports.RoomController = {
     getAllRoom,
     getSingleRoom,
     updateRoom,
-    deleteRoom
+    deleteRoom,
 };

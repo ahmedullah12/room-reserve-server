@@ -17,21 +17,18 @@ const roomSchema = new mongoose_1.Schema({
     floorNo: { type: Number, required: true },
     capacity: { type: Number, required: true },
     pricePerSlot: { type: Number, required: true },
+    images: { type: [String], required: true },
     amenities: { type: [String], required: true },
     isDeleted: { type: Boolean, default: false },
 });
-roomSchema.pre('find', function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        this.find({ isDeleted: { $ne: true } });
-        next();
-    });
-});
-roomSchema.pre('findOne', function (next) {
-    return __awaiter(this, void 0, void 0, function* () {
-        this.find({ isDeleted: { $ne: true } });
-        next();
-    });
-});
+// roomSchema.pre('find', async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
+// roomSchema.pre('findOne', async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
 // have to add isRoomExists and isRoomDeleted
 roomSchema.statics.isRoomExists = function (id) {
     return __awaiter(this, void 0, void 0, function* () {

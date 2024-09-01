@@ -1,12 +1,11 @@
 import { Router } from "express";
 import { UserController } from "./User.controller";
-import { validateRequest } from "../../middlewares/validateRequest";
-import { UserValidations } from "./User.validation";
+import auth from "../../middlewares/auth";
 
+const router  = Router();
 
-const router = Router();
-
-router.post("/signup",validateRequest(UserValidations.createUserSchemaValidation), UserController.createUser);
-router.post("/login",validateRequest(UserValidations.loginSchemaValidation), UserController.loginUser)
+router.get("/",auth("admin"), UserController.getAllUser);
+router.get("/user", UserController.getUser);
+router.put("/make-admin/:id", UserController.makeAdmin);
 
 export const UserRoutes = router;

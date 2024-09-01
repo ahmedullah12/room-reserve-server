@@ -7,20 +7,21 @@ const roomSchema = new Schema<TRoom>({
   floorNo: { type: Number, required: true },
   capacity: { type: Number, required: true },
   pricePerSlot: { type: Number, required: true },
+  images: { type: [String], required: true },
   amenities: { type: [String], required: true },
   isDeleted: { type: Boolean, default: false },
 });
 
-roomSchema.pre('find', async function (next) {
-  this.find({ isDeleted: { $ne: true } });
+// roomSchema.pre('find', async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
 
-  next();
-});
-roomSchema.pre('findOne', async function (next) {
-  this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
+// roomSchema.pre('findOne', async function (next) {
+//   this.find({ isDeleted: { $ne: true } });
 
-  next();
-});
+//   next();
+// });
 
 // have to add isRoomExists and isRoomDeleted
 roomSchema.statics.isRoomExists = async function (id: string) {

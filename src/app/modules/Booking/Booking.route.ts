@@ -13,18 +13,17 @@ router.post(
   BookingController.createBooking,
 );
 router.get('/', auth('admin'), BookingController.getAllBooking);
+router.get("/:id", BookingController.getSingleBooking);
 router.put(
   '/:id',
   auth('admin'),
   validateRequest(BookingValidations.updateBookingSchemaValidation),
   BookingController.updateBooking,
 );
-router.delete(
-  '/:id',
-  auth('admin'),
-  BookingController.deleteBooking,
-);
-
-
+router.delete('/:id', auth('admin'), BookingController.deleteBooking);
+router.delete('/:id/cancel', BookingController.cancelBooking);
+router.put('/:id/approve', BookingController.approveBooking);
+router.put('/:id/reject', BookingController.rejectBooking);
+router.put("/:bookingId/payment", BookingController.confirmBooking);
 
 export const BookingRoutes = router;

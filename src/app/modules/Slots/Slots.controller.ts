@@ -18,18 +18,43 @@ const createSlots = catchAsync(async(req, res) => {
 const getAvailableSlots = catchAsync(async(req, res) => {
     const result = await SlotsServices.getAvailableSlotsFromDB(req.query);
 
-    const isResult = result.length > 0;
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Available slots retrieved successfully",
+        data: result.result,
+        meta: result.meta,
+    })
+});
+
+const updateSlot = catchAsync(async(req, res) => {
+    const {id} = req.params;
+    const result = await SlotsServices.updateSlotIntoDB(id, req.body);
 
     sendResponse(res, {
-        statusCode: isResult ? httpStatus.OK : httpStatus.NOT_FOUND,
-        success: isResult ? true : false,
-        message: isResult ? "Available slots retrieved successfully" : "No Data Found",
-        data: result || [],
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Available slots retrieved successfully",
+        data: result,
+    })
+});
+
+const deleteSlot = catchAsync(async(req, res) => {
+    const {id} = req.params;
+    const result = await SlotsServices.deleteSlotFromDB(id as string);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Slot deleted successfully!!",
+        data: result,
     })
 })
 
 
 export const SlotsController = {
     createSlots,
-    getAvailableSlots
+    getAvailableSlots,
+    updateSlot,
+    deleteSlot
 }

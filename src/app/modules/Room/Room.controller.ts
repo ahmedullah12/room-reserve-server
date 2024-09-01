@@ -15,15 +15,13 @@ const createRoom = catchAsync(async (req, res) => {
 });
 
 const getAllRoom = catchAsync(async (req, res) => {
-  const result = await RoomServices.getAllRoomFromDB();
-
-  const isResult = result.length > 0;
+  const result = await RoomServices.getAllRoomFromDB(req.query);
 
   sendResponse(res, {
-    statusCode: isResult ? httpStatus.OK : httpStatus.NOT_FOUND,
-    success: isResult ? true : false,
-    message: isResult ? 'Rooms retrieved successfully' : "No Data Found",
-    data: result || [],
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Rooms retrieved successfully',
+    data: result,
   });
 });
 
@@ -31,12 +29,10 @@ const getSingleRoom = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await RoomServices.getSingleRoomFromDB(id);
 
-  
-
   sendResponse(res, {
-    statusCode:  result ? httpStatus.OK : httpStatus.NOT_FOUND,
+    statusCode: result ? httpStatus.OK : httpStatus.NOT_FOUND,
     success: result ? true : false,
-    message: result ? 'Room retrieved successfully' : "No Data Found",
+    message: result ? 'Room retrieved successfully' : 'No Data Found',
     data: result || [],
   });
 });
@@ -62,9 +58,9 @@ const deleteRoom = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Room deleted successfully",
+    message: 'Room deleted successfully',
     data: result,
-  })
+  });
 });
 
 export const RoomController = {
@@ -72,5 +68,5 @@ export const RoomController = {
   getAllRoom,
   getSingleRoom,
   updateRoom,
-  deleteRoom
+  deleteRoom,
 };

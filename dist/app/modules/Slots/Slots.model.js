@@ -24,12 +24,7 @@ const slotsSchema = new mongoose_1.Schema({
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
     isBooked: { type: Boolean, default: false },
-});
-slotsSchema.pre("find", function (next) {
-    if (!this.getOptions().skipIsBookedCheck) {
-        this.find({ isBooked: { $ne: true } });
-    }
-    next();
+    isDeleted: { type: Boolean, default: false }
 });
 slotsSchema.statics.isSlotExists = function (id) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -51,7 +46,7 @@ slotsSchema.statics.validateTimeDifference = function (payload) {
         return diffHours >= 1 && diffHours <= 24 && Number.isInteger(diffHours);
     });
 };
-slotsSchema.statics.slosCounts = function (payload) {
+slotsSchema.statics.slotsCounts = function (payload) {
     return __awaiter(this, void 0, void 0, function* () {
         const { startTime, endTime } = payload;
         const [startHour, startMinute] = startTime.split(':').map(Number);

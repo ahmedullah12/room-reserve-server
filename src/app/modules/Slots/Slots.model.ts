@@ -14,16 +14,12 @@ const slotsSchema = new Schema<TSlots>({
   startTime: { type: String, required: true },
   endTime: { type: String, required: true },
   isBooked: { type: Boolean, default: false },
+  isDeleted: {type: Boolean, default: false}
 });
 
-slotsSchema.pre("find", function(next) {
-  if (!this.getOptions().skipIsBookedCheck) {
-    this.find({ isBooked: { $ne: true } });
-  }
-  next();
-});
 
-slotsSchema.statics.isSlotExists = async function(id: Schema.Types.ObjectId){
+
+slotsSchema.statics.isSlotExists = async function(id: string){
   const slot = await Slot.findById(id);
   return slot;
 }
@@ -47,7 +43,7 @@ slotsSchema.statics.validateTimeDifference = async function (payload: TSlots) {
   return diffHours >= 1 && diffHours <= 24 && Number.isInteger(diffHours);
 };
 
-slotsSchema.statics.slosCounts = async function (payload: TSlots) {
+slotsSchema.statics.slotsCounts = async function (payload: TSlots) {
   const { startTime, endTime } = payload;
   const [startHour, startMinute] = startTime.split(':').map(Number);
   const [endHour, endMinute] = endTime.split(':').map(Number);

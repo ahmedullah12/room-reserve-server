@@ -3,12 +3,19 @@ import { Model, Types } from 'mongoose';
 import { ConfirmState } from './Booking.constant';
 
 export type TBooking = {
+  userId: Types.ObjectId;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  roomName: string;
+  time: string[];
   date: string;
   slots: Types.ObjectId[];
   room: Types.ObjectId;
-  user: Types.ObjectId;
   totalAmount: number;
   isConfirmed: keyof typeof ConfirmState;
+  isRejected: boolean;
   isDeleted: boolean;
 };
 

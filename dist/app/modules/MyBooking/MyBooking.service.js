@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MyBookingServices = void 0;
-const User_model_1 = require("../User/User.model");
 const Booking_model_1 = require("../Booking/Booking.model");
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
+const User_model_1 = require("../User/User.model");
 const getUsersBookingsFromDB = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = user;
     //checking if user exists
@@ -24,7 +24,7 @@ const getUsersBookingsFromDB = (user) => __awaiter(void 0, void 0, void 0, funct
     if (!isUserExists) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User doesn't exists");
     }
-    const result = yield Booking_model_1.Booking.find({ user: isUserExists._id }, { user: 0 })
+    const result = yield Booking_model_1.Booking.find({ userId: isUserExists._id }, { user: 0 })
         .populate({
         path: 'slots',
         options: { skipIsBookedCheck: true },

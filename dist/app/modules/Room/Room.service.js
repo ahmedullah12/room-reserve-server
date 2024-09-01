@@ -16,12 +16,18 @@ exports.RoomServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const Room_model_1 = require("./Room.model");
+const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
+const searchableFields = ['name', 'roomNo', 'floorNo'];
 const createRoomIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Room_model_1.Room.create(payload);
     return result;
 });
-const getAllRoomFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Room_model_1.Room.find();
+const getAllRoomFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const roomQuery = new QueryBuilder_1.default(Room_model_1.Room.find(), query)
+        .search(searchableFields)
+        .filter()
+        .sort();
+    const result = yield roomQuery.modelQuery;
     return result;
 });
 const getSingleRoomFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {

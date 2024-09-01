@@ -13,31 +13,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
+const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
-const User_service_1 = require("./User.service");
-const http_status_1 = __importDefault(require("http-status"));
-const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield User_service_1.UserServices.createUserIntoDB(req.body);
+const User_services_1 = require("./User.services");
+const getAllUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield User_services_1.UserServices.getAllUser();
     (0, sendResponse_1.default)(res, {
-        success: true,
         statusCode: http_status_1.default.OK,
-        message: "User registered successfully",
+        success: true,
+        message: "Users data retrieved",
         data: result,
     });
 }));
-const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield User_service_1.UserServices.loginUser(req.body);
-    const { accessToken, user } = result;
+const getUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.query;
+    const result = yield User_services_1.UserServices.getUserData(email);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        token: accessToken,
-        message: "User logged in successfully",
-        data: user
+        message: "User data retrieved",
+        data: result,
+    });
+}));
+const makeAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield User_services_1.UserServices.makeAdmin(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Admin created!!!",
+        data: result,
     });
 }));
 exports.UserController = {
-    createUser,
-    loginUser,
+    getAllUser,
+    getUser,
+    makeAdmin
 };

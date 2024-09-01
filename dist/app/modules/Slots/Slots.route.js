@@ -12,4 +12,6 @@ const Slots_controller_1 = require("./Slots.controller");
 const router = (0, express_1.Router)();
 router.post("/", (0, auth_1.default)("admin"), (0, validateRequest_1.validateRequest)(Slots_validation_1.SlotsValidations.createSlotsSchemaValidation), Slots_controller_1.SlotsController.createSlots);
 router.get("/availability", Slots_controller_1.SlotsController.getAvailableSlots);
+router.put("/:id", (0, auth_1.default)("admin"), (0, validateRequest_1.validateRequest)(Slots_validation_1.SlotsValidations.updateSlotsSchemaValidation), Slots_controller_1.SlotsController.updateSlot);
+router.delete("/:id", (0, auth_1.default)("admin"), Slots_controller_1.SlotsController.deleteSlot);
 exports.SlotsRoutes = router;

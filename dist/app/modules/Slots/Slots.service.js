@@ -17,6 +17,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const Room_model_1 = require("../Room/Room.model");
 const Slots_model_1 = require("./Slots.model");
+const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const createSlotsIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { room, date, startTime } = payload;
     //checking if room exists
@@ -24,18 +25,16 @@ const createSlotsIntoDB = (payload) => __awaiter(void 0, void 0, void 0, functio
     if (!isRoomExists) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Room doesn't exists");
     }
-    ;
     const isRoomDeleted = yield Room_model_1.Room.isRoomDeleted(String(room));
     if (!isRoomDeleted) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Room doesn't exists");
     }
-    ;
     const validateTimeDifference = yield Slots_model_1.Slot.validateTimeDifference(payload);
     if (!validateTimeDifference) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid time difference. The difference between startTime and endTime should be a whole number of hours');
     }
     // getting the slots counts
-    const slotsCounts = yield Slots_model_1.Slot.slosCounts(payload);
+    const slotsCounts = yield Slots_model_1.Slot.slotsCounts(payload);
     // generating the slots intervals
     const slotIntervals = [];
     let currentTime = startTime;
@@ -73,10 +72,46 @@ const getAvailableSlotsFromDB = (query) => __awaiter(void 0, void 0, void 0, fun
         searchCriteria.room = query.roomId;
     }
     // by default searchCriteria is emply object , so should get all the data
-    const result = yield Slots_model_1.Slot.find(searchCriteria).populate("room");
+    // const result = await Slot.find(searchCriteria).populate('room');
+    const slotQuery = new QueryBuilder_1.default(Slots_model_1.Slot.find(searchCriteria).populate('room'), query).paginate();
+    const result = yield slotQuery.modelQuery;
+    const meta = yield slotQuery.countTotal();
+    return {
+        result, meta
+    };
+});
+const updateSlotIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    // Checking if the slot exists
+    const isSlotExists = yield Slots_model_1.Slot.isSlotExists(id);
+    if (!isSlotExists) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Slot not found');
+    }
+    // If both startTime and endTime are provided in the payload, validate the time difference
+    if (payload.startTime && payload.endTime) {
+        const [startHour, startMinute] = payload.startTime.split(':').map(Number);
+        const [endHour, endMinute] = payload.endTime.split(':').map(Number);
+        // Check if the difference is exactly 1 hour and the minutes are the same
+        if (endHour - startHour !== 1 || startMinute !== endMinute) {
+            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Invalid time difference. The difference between startTime and endTime should be exactly one hour.');
+        }
+    }
+    // Proceeding with the update if validation passes
+    const result = yield Slots_model_1.Slot.findByIdAndUpdate(id, payload, { new: true });
+    return result;
+});
+const deleteSlotFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    //checking if room exists
+    const isSlotExists = yield Slots_model_1.Slot.isSlotExists(id);
+    if (!isSlotExists) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Slot not found');
+    }
+    ;
+    const result = yield Slots_model_1.Slot.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     return result;
 });
 exports.SlotsServices = {
     createSlotsIntoDB,
     getAvailableSlotsFromDB,
+    updateSlotIntoDB,
+    deleteSlotFromDB,
 };
