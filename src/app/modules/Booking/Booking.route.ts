@@ -13,7 +13,7 @@ router.post(
   BookingController.createBooking,
 );
 router.get('/', auth('admin'), BookingController.getAllBooking);
-router.get("/:id", BookingController.getSingleBooking);
+router.get('/:id', BookingController.getSingleBooking);
 router.put(
   '/:id',
   auth('admin'),
@@ -24,6 +24,13 @@ router.delete('/:id', auth('admin'), BookingController.deleteBooking);
 router.delete('/:id/cancel', BookingController.cancelBooking);
 router.put('/:id/approve', BookingController.approveBooking);
 router.put('/:id/reject', BookingController.rejectBooking);
-router.put("/:bookingId/payment", BookingController.confirmBooking);
+router.put(
+  '/:bookingId/payment-with-amarpay',
+  BookingController.confirmBookingWithAmarpay,
+);
+router.put(
+  '/:bookingId/payment-with-stripe',
+  BookingController.confirmBookingWithStripe,
+);
 
 export const BookingRoutes = router;

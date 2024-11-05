@@ -12,4 +12,6 @@ export default {
   store_id: process.env.STORE_ID,
   signature_key: process.env.SIGNATURE_KEY,
   payment_verify_url: process.env.PAYMENT_VERIFY_URL,
+  stripe_secret_key: process.env.STRIPE_SECRET_KEY,
+  stripe_webhook_key: process.env.STRIPE_WEBHOOK_KEY,
 };

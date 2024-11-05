@@ -14,9 +14,20 @@ const createBooking = catchAsync(async (req, res) => {
   });
 });
 
-const confirmBooking = catchAsync(async (req, res) => {
+const confirmBookingWithAmarpay = catchAsync(async (req, res) => {
   const { bookingId } = req.params;
-  const result = await BookingServices.confirmBooking(bookingId);
+  const result = await BookingServices.confirmBookingWithAmarpay(bookingId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Payment started successfully!!',
+    data: result,
+  });
+});
+const confirmBookingWithStripe = catchAsync(async (req, res) => {
+  const { bookingId } = req.params;
+  const result = await BookingServices.confirmBookingWithStripe(bookingId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -107,7 +118,8 @@ const rejectBooking = catchAsync(async (req, res) => {
 export const BookingController = {
   createBooking,
   getAllBooking,
-  confirmBooking,
+  confirmBookingWithAmarpay,
+  confirmBookingWithStripe,
   getSingleBooking,
   updateBooking,
   deleteBooking,

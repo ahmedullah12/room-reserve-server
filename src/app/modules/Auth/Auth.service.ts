@@ -59,7 +59,7 @@ const loginUser = async (payload: TLoginUser) => {
   const accessToken = createToken(
     jwtPayload,
     config.access_token_secret as string,
-    '1d',
+    '10s',
   );
   const refreshToken = createToken(
     jwtPayload,
@@ -73,7 +73,6 @@ const loginUser = async (payload: TLoginUser) => {
     user,
   };
 };
-
 
 const refreshToken = async (token: string) => {
   // checking if the given token is valid
@@ -96,7 +95,7 @@ const refreshToken = async (token: string) => {
   const accessToken = createToken(
     jwtPayload,
     config.access_token_secret as string,
-    "1d",
+    '10s',
   );
 
   return {
@@ -107,5 +106,5 @@ const refreshToken = async (token: string) => {
 export const AuthServices = {
   signUpUser,
   loginUser,
-  refreshToken
+  refreshToken,
 };

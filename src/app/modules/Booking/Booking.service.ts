@@ -8,6 +8,9 @@ import AppError from '../../error/AppError';
 import httpStatus from 'http-status';
 import { User } from '../User/User.model';
 import { initiatePayment } from '../Payment/Payment.utils';
+import Stripe from 'stripe';
+import config from '../../config';
+const stripe = new Stripe(config.stripe_secret_key as string);
 
 const createBookingIntoDB = async (payload: TBooking) => {
   const { slots, room, userId } = payload;
@@ -70,7 +73,7 @@ const createBookingIntoDB = async (payload: TBooking) => {
   }
 };
 
-const confirmBooking = async (bookingId: string) => {
+const confirmBookingWithAmarpay = async (bookingId: string) => {
   const booking = await Booking.findById(bookingId);
 
   const transactionId = `TXN-RR-${Date.now()}`;
@@ -88,6 +91,36 @@ const confirmBooking = async (bookingId: string) => {
   const paymentSession = await initiatePayment(paymentData);
 
   return paymentSession;
+};
+
+const confirmBookingWithStripe = async (bookingId: string) => {
+  const booking = await Booking.findById(bookingId).populate('room');
+
+  if (!booking) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+  }
+
+  const lineItem = {
+    price_data: {
+      currency: 'usd',
+      product_data: {
+        name: booking.roomName,
+      },
+      unit_amount: booking.totalAmount * 100,
+    },
+    quantity: booking.slots.length,
+  };
+
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [lineItem],
+    mode: 'payment',
+    success_url: 'http://localhost:5173/payment-success',
+    cancel_url: 'http://localhost:5173/payment-cancel',
+    metadata: { bookingId },
+  });
+
+  return { id: session.id };
 };
 
 const getAllBookingsFromDB = async () => {
@@ -305,7 +338,8 @@ export const BookingServices = {
   getSingleBookingFromDB,
   updateBookingIntoDB,
   deleteBookingFromDB,
-  confirmBooking,
+  confirmBookingWithAmarpay,
+  confirmBookingWithStripe,
   cancelBookingFromDB,
   approveBooking,
   rejectBooking,

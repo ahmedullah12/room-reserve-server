@@ -3,7 +3,6 @@
 import { ErrorRequestHandler } from 'express';
 import { ZodError } from 'zod';
 import { TErrorSource } from '../interface/error';
-import config from '../config';
 import handleZodError from '../error/handleZodError';
 import handleValidationError from '../error/handleValidationError';
 import handleCastError from '../error/handleCastError';
