@@ -22,6 +22,9 @@ const AppError_1 = __importDefault(require("../../error/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
 const User_model_1 = require("../User/User.model");
 const Payment_utils_1 = require("../Payment/Payment.utils");
+const stripe_1 = __importDefault(require("stripe"));
+const config_1 = __importDefault(require("../../config"));
+const stripe = new stripe_1.default(config_1.default.stripe_secret_key);
 const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { slots, room, userId } = payload;
     //checking if room exists
@@ -68,7 +71,7 @@ const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, funct
         throw new Error(err);
     }
 });
-const confirmBooking = (bookingId) => __awaiter(void 0, void 0, void 0, function* () {
+const confirmBookingWithAmarpay = (bookingId) => __awaiter(void 0, void 0, void 0, function* () {
     const booking = yield Booking_model_1.Booking.findById(bookingId);
     const transactionId = `TXN-RR-${Date.now()}`;
     const paymentData = {
@@ -82,6 +85,31 @@ const confirmBooking = (bookingId) => __awaiter(void 0, void 0, void 0, function
     };
     const paymentSession = yield (0, Payment_utils_1.initiatePayment)(paymentData);
     return paymentSession;
+});
+const confirmBookingWithStripe = (bookingId) => __awaiter(void 0, void 0, void 0, function* () {
+    const booking = yield Booking_model_1.Booking.findById(bookingId).populate('room');
+    if (!booking) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Booking not found');
+    }
+    const lineItem = {
+        price_data: {
+            currency: 'usd',
+            product_data: {
+                name: booking.roomName,
+            },
+            unit_amount: booking.totalAmount * 100,
+        },
+        quantity: booking.slots.length,
+    };
+    const session = yield stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [lineItem],
+        mode: 'payment',
+        success_url: `http://localhost:5173/checkout/${bookingId}`,
+        cancel_url: `http://localhost:5173/checkout/${bookingId}`,
+        metadata: { bookingId },
+    });
+    return { id: session.id };
 });
 const getAllBookingsFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Booking_model_1.Booking.find()
@@ -231,7 +259,8 @@ exports.BookingServices = {
     getSingleBookingFromDB,
     updateBookingIntoDB,
     deleteBookingFromDB,
-    confirmBooking,
+    confirmBookingWithAmarpay,
+    confirmBookingWithStripe,
     cancelBookingFromDB,
     approveBooking,
     rejectBooking,

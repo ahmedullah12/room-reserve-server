@@ -7,7 +7,8 @@ import { AuthController } from "./Auth.controller";
 const router = Router();
 
 router.post("/signup",validateRequest(AuthValidations.createUserSchemaValidation), AuthController.signUp);
-router.post("/login",validateRequest(AuthValidations.loginSchemaValidation), AuthController.login)
+router.post("/login",validateRequest(AuthValidations.loginSchemaValidation), AuthController.login);
+router.post("/logout", AuthController.logout);
 router.post(
     '/refresh-token',
     validateRequest(AuthValidations.refreshTokenValidationSchema),

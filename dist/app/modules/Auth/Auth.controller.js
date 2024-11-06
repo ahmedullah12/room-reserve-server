@@ -21,9 +21,9 @@ const signUp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0,
     const result = yield Auth_service_1.AuthServices.signUpUser(req.body);
     const { accessToken, refreshToken, user } = result;
     res.cookie('refreshToken', refreshToken, {
-        secure: false,
+        secure: true,
         httpOnly: true,
-        sameSite: true,
+        sameSite: "none",
         maxAge: 1000 * 60 * 60 * 24 * 30,
     });
     (0, sendResponse_1.default)(res, {
@@ -40,9 +40,9 @@ const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, 
     const result = yield Auth_service_1.AuthServices.loginUser(req.body);
     const { accessToken, refreshToken, user } = result;
     res.cookie('refreshToken', refreshToken, {
-        secure: false,
+        secure: true,
         httpOnly: true,
-        sameSite: true,
+        sameSite: "none",
         maxAge: 1000 * 60 * 60 * 24 * 30,
     });
     (0, sendResponse_1.default)(res, {
@@ -53,6 +53,19 @@ const login = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, 
             accessToken,
             email: user === null || user === void 0 ? void 0 : user.email,
         },
+    });
+}));
+const logout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    res.clearCookie("refreshToken", {
+        secure: true,
+        httpOnly: true,
+        sameSite: "none",
+    });
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Logged In Successfully!!',
+        data: null,
     });
 }));
 const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -68,5 +81,6 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 exports.AuthController = {
     signUp,
     login,
+    logout,
     refreshToken
 };

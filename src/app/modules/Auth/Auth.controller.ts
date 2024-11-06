@@ -8,9 +8,9 @@ const signUp = catchAsync(async (req, res) => {
   const { accessToken, refreshToken, user } = result;
 
   res.cookie('refreshToken', refreshToken, {
-    secure: false,
+    secure: true,
     httpOnly: true,
-    sameSite: true,
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24 * 30,
   });
 
@@ -30,9 +30,9 @@ const login = catchAsync(async (req, res) => {
   const { accessToken, refreshToken, user } = result;
 
   res.cookie('refreshToken', refreshToken, {
-    secure: false,
+    secure: true,
     httpOnly: true,
-    sameSite: true,
+    sameSite: "none",
     maxAge: 1000 * 60 * 60 * 24 * 30,
   });
 
@@ -44,6 +44,21 @@ const login = catchAsync(async (req, res) => {
       accessToken,
       email: user?.email,
     },
+  });
+});
+
+const logout = catchAsync(async (req, res) => {
+  res.clearCookie("refreshToken", {
+    secure: true,
+    httpOnly: true,
+    sameSite: "none",
+  });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Logged In Successfully!!',
+    data: null,
   });
 });
 
@@ -62,5 +77,6 @@ const refreshToken = catchAsync(async (req, res) => {
 export const AuthController = {
   signUp,
   login,
+  logout,
   refreshToken
 };

@@ -25,11 +25,11 @@ router.delete('/:id/cancel', BookingController.cancelBooking);
 router.put('/:id/approve', BookingController.approveBooking);
 router.put('/:id/reject', BookingController.rejectBooking);
 router.put(
-  '/:bookingId/payment-with-amarpay',
+  '/:bookingId/pay-with-amarpay',
   BookingController.confirmBookingWithAmarpay,
 );
 router.put(
-  '/:bookingId/payment-with-stripe',
+  '/:bookingId/pay-with-stripe',
   BookingController.confirmBookingWithStripe,
 );
 

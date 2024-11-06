@@ -72,7 +72,7 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         name: user.name,
         role: user.role,
     };
-    const accessToken = (0, Auth_utils_1.createToken)(jwtPayload, config_1.default.access_token_secret, "1d");
+    const accessToken = (0, Auth_utils_1.createToken)(jwtPayload, config_1.default.access_token_secret, '1d');
     return {
         accessToken,
     };
@@ -80,5 +80,5 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
 exports.AuthServices = {
     signUpUser,
     loginUser,
-    refreshToken
+    refreshToken,
 };

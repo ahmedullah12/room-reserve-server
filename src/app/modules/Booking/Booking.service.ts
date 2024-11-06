@@ -115,8 +115,8 @@ const confirmBookingWithStripe = async (bookingId: string) => {
     payment_method_types: ['card'],
     line_items: [lineItem],
     mode: 'payment',
-    success_url: 'http://localhost:5173/payment-success',
-    cancel_url: 'http://localhost:5173/payment-cancel',
+    success_url: `http://localhost:5173/checkout/${bookingId}`,
+    cancel_url: `http://localhost:5173/checkout/${bookingId}`,
     metadata: { bookingId },
   });
 

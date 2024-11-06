@@ -26,9 +26,19 @@ const createBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
-const confirmBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const confirmBookingWithAmarpay = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { bookingId } = req.params;
-    const result = yield Booking_service_1.BookingServices.confirmBooking(bookingId);
+    const result = yield Booking_service_1.BookingServices.confirmBookingWithAmarpay(bookingId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: 'Payment started successfully!!',
+        data: result,
+    });
+}));
+const confirmBookingWithStripe = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { bookingId } = req.params;
+    const result = yield Booking_service_1.BookingServices.confirmBookingWithStripe(bookingId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -108,7 +118,8 @@ const rejectBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 exports.BookingController = {
     createBooking,
     getAllBooking,
-    confirmBooking,
+    confirmBookingWithAmarpay,
+    confirmBookingWithStripe,
     getSingleBooking,
     updateBooking,
     deleteBooking,
