@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const createRoomSchemaValidations = zod_1.z.object({
     body: zod_1.z.object({
         name: zod_1.z.string(),
-        roomNo: zod_1.z.number(),
+        roomNumber: zod_1.z.number(),
         floorNo: zod_1.z.number(),
         capacity: zod_1.z.number(),
         images: zod_1.z.array(zod_1.z.string()),
@@ -16,7 +16,7 @@ const createRoomSchemaValidations = zod_1.z.object({
 const updateRoomSchemaValidations = zod_1.z.object({
     body: zod_1.z.object({
         name: zod_1.z.string().optional(),
-        roomNo: zod_1.z.number().optional(),
+        roomNumber: zod_1.z.number().optional(),
         floorNo: zod_1.z.number().optional(),
         capacity: zod_1.z.number().optional(),
         images: zod_1.z.array(zod_1.z.string()).optional(),

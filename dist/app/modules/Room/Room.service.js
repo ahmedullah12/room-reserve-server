@@ -26,9 +26,14 @@ const getAllRoomFromDB = (query) => __awaiter(void 0, void 0, void 0, function* 
     const roomQuery = new QueryBuilder_1.default(Room_model_1.Room.find(), query)
         .search(searchableFields)
         .filter()
-        .sort();
+        .sort()
+        .paginate();
     const result = yield roomQuery.modelQuery;
-    return result;
+    const meta = yield roomQuery.countTotal();
+    return {
+        result,
+        meta
+    };
 });
 const getSingleRoomFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Room_model_1.Room.findById(id);

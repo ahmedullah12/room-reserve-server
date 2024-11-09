@@ -27,11 +27,12 @@ const createRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
     });
 }));
 const getAllRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Room_service_1.RoomServices.getAllRoomFromDB(req.query);
+    const { result, meta } = yield Room_service_1.RoomServices.getAllRoomFromDB(req.query);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: 'Rooms retrieved successfully',
+        meta,
         data: result,
     });
 }));

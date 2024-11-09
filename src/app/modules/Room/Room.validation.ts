@@ -3,7 +3,7 @@ import { z } from 'zod';
 const createRoomSchemaValidations = z.object({
   body: z.object({
     name: z.string(),
-    roomNo: z.number(),
+    roomNumber: z.number(),
     floorNo: z.number(),
     capacity: z.number(),
     images: z.array(z.string()),
@@ -15,7 +15,7 @@ const createRoomSchemaValidations = z.object({
 const updateRoomSchemaValidations = z.object({
   body: z.object({
     name: z.string().optional(),
-    roomNo: z.number().optional(),
+    roomNumber: z.number().optional(),
     floorNo: z.number().optional(),
     capacity: z.number().optional(),
     images: z.array(z.string()).optional(),

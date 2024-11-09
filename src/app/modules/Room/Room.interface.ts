@@ -3,7 +3,7 @@ import { Model } from 'mongoose';
 
 export type TRoom = {
   name: string;
-  roomNo: number;
+  roomNumber: number;
   floorNo: number;
   capacity: number;
   pricePerSlot: number;

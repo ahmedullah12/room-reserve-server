@@ -16,10 +16,15 @@ const getAllRoomFromDB = async (query: Record<string, unknown>) => {
   const roomQuery = new QueryBuilder(Room.find(), query)
     .search(searchableFields)
     .filter()
-    .sort();
+    .sort()
+    .paginate();
   const result = await roomQuery.modelQuery;
+  const meta = await roomQuery.countTotal();
 
-  return result;
+  return {
+    result,
+    meta
+  };
 };
 
 const getSingleRoomFromDB = async (id: string) => {

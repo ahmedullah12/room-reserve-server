@@ -38,12 +38,13 @@ const confirmBookingWithStripe = catchAsync(async (req, res) => {
 });
 
 const getAllBooking = catchAsync(async (req, res) => {
-  const result = await BookingServices.getAllBookingsFromDB();
+  const {result, meta} = await BookingServices.getAllBookingsFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'All bookings retrieved successfully',
+    meta,
     data: result,
   });
 });

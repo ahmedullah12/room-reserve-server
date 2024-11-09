@@ -13,13 +13,15 @@ exports.Room = void 0;
 const mongoose_1 = require("mongoose");
 const roomSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
-    roomNo: { type: Number, required: true, unique: true },
+    roomNumber: { type: Number, required: true, unique: true },
     floorNo: { type: Number, required: true },
     capacity: { type: Number, required: true },
     pricePerSlot: { type: Number, required: true },
     images: { type: [String], required: true },
     amenities: { type: [String], required: true },
     isDeleted: { type: Boolean, default: false },
+}, {
+    timestamps: true
 });
 // roomSchema.pre('find', async function (next) {
 //   this.find({ isDeleted: { $ne: true } });

@@ -10,6 +10,7 @@ import { User } from '../User/User.model';
 import { initiatePayment } from '../Payment/Payment.utils';
 import Stripe from 'stripe';
 import config from '../../config';
+import QueryBuilder from '../../builder/QueryBuilder';
 const stripe = new Stripe(config.stripe_secret_key as string);
 
 const createBookingIntoDB = async (payload: TBooking) => {
@@ -123,16 +124,22 @@ const confirmBookingWithStripe = async (bookingId: string) => {
   return { id: session.id };
 };
 
-const getAllBookingsFromDB = async () => {
-  const result = await Booking.find()
-    .populate({
-      path: 'slots',
-      options: { skipIsBookedCheck: true },
-    })
-    .populate('room')
-    .populate('userId');
+const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
+  const bookingQuery = new QueryBuilder(
+    Booking.find()
+      .populate({
+        path: 'slots',
+        options: { skipIsBookedCheck: true },
+      })
+      .populate('room')
+      .populate('userId'),
+    query,
+  ).paginate();
 
-  return result;
+  const result = await bookingQuery.modelQuery;
+  const meta = await bookingQuery.countTotal();
+
+  return { result, meta };
 };
 
 const getSingleBookingFromDB = async (id: string) => {

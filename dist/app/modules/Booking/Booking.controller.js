@@ -47,11 +47,12 @@ const confirmBookingWithStripe = (0, catchAsync_1.default)((req, res) => __await
     });
 }));
 const getAllBooking = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Booking_service_1.BookingServices.getAllBookingsFromDB();
+    const { result, meta } = yield Booking_service_1.BookingServices.getAllBookingsFromDB(req.query);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: 'All bookings retrieved successfully',
+        meta,
         data: result,
     });
 }));

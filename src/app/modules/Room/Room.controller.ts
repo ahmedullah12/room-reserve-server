@@ -15,12 +15,13 @@ const createRoom = catchAsync(async (req, res) => {
 });
 
 const getAllRoom = catchAsync(async (req, res) => {
-  const result = await RoomServices.getAllRoomFromDB(req.query);
+  const {result, meta} = await RoomServices.getAllRoomFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Rooms retrieved successfully',
+    meta,
     data: result,
   });
 });

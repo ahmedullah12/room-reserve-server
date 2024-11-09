@@ -18,11 +18,12 @@ const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const User_services_1 = require("./User.services");
 const getAllUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield User_services_1.UserServices.getAllUser();
+    const { result, meta } = yield User_services_1.UserServices.getAllUser(req.query);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Users data retrieved",
+        message: 'Users data retrieved',
+        meta,
         data: result,
     });
 }));
@@ -32,7 +33,7 @@ const getUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "User data retrieved",
+        message: 'User data retrieved',
         data: result,
     });
 }));
@@ -42,12 +43,12 @@ const makeAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Admin created!!!",
+        message: 'Admin created!!!',
         data: result,
     });
 }));
 exports.UserController = {
     getAllUser,
     getUser,
-    makeAdmin
+    makeAdmin,
 };

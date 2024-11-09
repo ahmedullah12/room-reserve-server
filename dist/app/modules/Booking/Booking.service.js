@@ -24,6 +24,7 @@ const User_model_1 = require("../User/User.model");
 const Payment_utils_1 = require("../Payment/Payment.utils");
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = __importDefault(require("../../config"));
+const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const stripe = new stripe_1.default(config_1.default.stripe_secret_key);
 const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { slots, room, userId } = payload;
@@ -111,15 +112,17 @@ const confirmBookingWithStripe = (bookingId) => __awaiter(void 0, void 0, void 0
     });
     return { id: session.id };
 });
-const getAllBookingsFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield Booking_model_1.Booking.find()
+const getAllBookingsFromDB = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const bookingQuery = new QueryBuilder_1.default(Booking_model_1.Booking.find()
         .populate({
         path: 'slots',
         options: { skipIsBookedCheck: true },
     })
         .populate('room')
-        .populate('userId');
-    return result;
+        .populate('userId'), query).paginate();
+    const result = yield bookingQuery.modelQuery;
+    const meta = yield bookingQuery.countTotal();
+    return { result, meta };
 });
 const getSingleBookingFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield Booking_model_1.Booking.findById(id);

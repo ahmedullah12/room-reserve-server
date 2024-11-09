@@ -8,23 +8,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserServices = void 0;
+const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const User_model_1 = require("./User.model");
-const getAllUser = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield User_model_1.User.find();
-    return result;
+const getAllUser = (query) => __awaiter(void 0, void 0, void 0, function* () {
+    const userQuery = new QueryBuilder_1.default(User_model_1.User.find(), query).paginate();
+    const result = yield userQuery.modelQuery;
+    const meta = yield userQuery.countTotal();
+    return { result, meta };
 });
 const getUserData = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield User_model_1.User.findOne({ email: payload });
     return user;
 });
 const makeAdmin = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield User_model_1.User.findByIdAndUpdate(id, { role: "admin" }, { new: true });
+    const result = yield User_model_1.User.findByIdAndUpdate(id, { role: 'admin' }, { new: true });
     return result;
 });
 exports.UserServices = {
     getAllUser,
     getUserData,
-    makeAdmin
+    makeAdmin,
 };
