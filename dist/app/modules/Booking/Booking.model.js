@@ -25,7 +25,7 @@ const bookingSchema = new mongoose_1.Schema({
     totalAmount: { type: Number, required: true },
     isConfirmed: {
         type: String,
-        enum: ['confirmed', 'unconfirmed', 'canceled'],
+        enum: ['confirmed', 'unconfirmed', 'cancelled'],
         default: 'unconfirmed',
     },
     isRejected: { type: Boolean, default: false },

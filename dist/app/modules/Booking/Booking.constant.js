@@ -4,5 +4,5 @@ exports.ConfirmState = void 0;
 exports.ConfirmState = {
     confirmed: "confirmed",
     unconfirmed: "unconfirmed",
-    canceled: "cancelled",
+    cancelled: "cancelled",
 };

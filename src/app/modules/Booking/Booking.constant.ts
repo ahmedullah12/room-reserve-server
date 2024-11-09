@@ -1,5 +1,5 @@
 export const ConfirmState = {
     confirmed: "confirmed",
     unconfirmed: "unconfirmed",
-    canceled: "cancelled",
+    cancelled: "cancelled",
 } as const;

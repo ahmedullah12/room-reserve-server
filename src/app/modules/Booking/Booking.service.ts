@@ -11,7 +11,56 @@ import { initiatePayment } from '../Payment/Payment.utils';
 import Stripe from 'stripe';
 import config from '../../config';
 import QueryBuilder from '../../builder/QueryBuilder';
+import { ConfirmState } from './Booking.constant';
 const stripe = new Stripe(config.stripe_secret_key as string);
+
+const cancelExpiredBooking = async (booking: any) => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    // Update slots to set isBooked to false
+    const updateSlots = await Slot.updateMany(
+      { _id: { $in: booking.slots } },
+      { $set: { isBooked: false } },
+      { session },
+    );
+
+    if (!updateSlots) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to unbook the slots');
+    }
+
+    // Update the booking status
+    const result = await Booking.findByIdAndUpdate(
+      booking._id,
+      { isConfirmed: 'cancelled' },
+      { new: true, session },
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (err: any) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, err.message);
+  }
+};
+
+// Function to check and cancel expired bookings
+const checkAndCancelExpiredBookings = async () => {
+  const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+  
+  const expiredBookings = await Booking.find({
+    createdAt: { $lt: thirtyMinutesAgo },
+    isConfirmed: 'unconfirmed'
+  });
+
+  for (const booking of expiredBookings) {
+    await cancelExpiredBooking(booking);
+  }
+};
 
 const createBookingIntoDB = async (payload: TBooking) => {
   const { slots, room, userId } = payload;
@@ -60,11 +109,25 @@ const createBookingIntoDB = async (payload: TBooking) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to booked the slots');
     }
 
-    const newPayload = { ...payload, totalAmount };
+    // Set initial confirmation status to unconfirmed
+    const newPayload = { 
+      ...payload, 
+      totalAmount,
+      isConfirmed: 'unconfirmed'
+    };
+    
     const result = await Booking.create([newPayload], { session });
 
     await session.commitTransaction();
     await session.endSession();
+
+    // Schedule the cancellation check
+    setTimeout(async () => {
+      const booking = await Booking.findById(result[0]._id);
+      if (booking && booking.isConfirmed === 'unconfirmed') {
+        await cancelExpiredBooking(booking);
+      }
+    }, 30 * 60 * 1000); // 30 minutes
 
     return result[0];
   } catch (err: any) {
@@ -76,6 +139,14 @@ const createBookingIntoDB = async (payload: TBooking) => {
 
 const confirmBookingWithAmarpay = async (bookingId: string) => {
   const booking = await Booking.findById(bookingId);
+
+  if (!booking) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+  };
+
+  if(booking.isConfirmed === ConfirmState.cancelled){
+    throw new AppError(httpStatus.BAD_REQUEST, 'Booking already cancelled!!!');
+  }
 
   const transactionId = `TXN-RR-${Date.now()}`;
 
@@ -99,6 +170,10 @@ const confirmBookingWithStripe = async (bookingId: string) => {
 
   if (!booking) {
     throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+  };
+
+  if(booking.isConfirmed === ConfirmState.cancelled){
+    throw new AppError(httpStatus.BAD_REQUEST, 'Booking already cancelled!!!');
   }
 
   const lineItem = {
@@ -154,6 +229,7 @@ const updateBookingIntoDB = async (id: string, payload: Partial<TBooking>) => {
   if (!isBookingExists) {
     throw new AppError(httpStatus.NOT_FOUND, "Booking doesn't exists");
   }
+  
 
   const result = await Booking.findByIdAndUpdate(id, payload, {
     new: true,
@@ -350,4 +426,5 @@ export const BookingServices = {
   cancelBookingFromDB,
   approveBooking,
   rejectBooking,
+  checkAndCancelExpiredBookings,
 };

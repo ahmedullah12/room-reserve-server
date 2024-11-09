@@ -25,7 +25,40 @@ const Payment_utils_1 = require("../Payment/Payment.utils");
 const stripe_1 = __importDefault(require("stripe"));
 const config_1 = __importDefault(require("../../config"));
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
+const Booking_constant_1 = require("./Booking.constant");
 const stripe = new stripe_1.default(config_1.default.stripe_secret_key);
+const cancelExpiredBooking = (booking) => __awaiter(void 0, void 0, void 0, function* () {
+    const session = yield mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        // Update slots to set isBooked to false
+        const updateSlots = yield Slots_model_1.Slot.updateMany({ _id: { $in: booking.slots } }, { $set: { isBooked: false } }, { session });
+        if (!updateSlots) {
+            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to unbook the slots');
+        }
+        // Update the booking status
+        const result = yield Booking_model_1.Booking.findByIdAndUpdate(booking._id, { isConfirmed: 'cancelled' }, { new: true, session });
+        yield session.commitTransaction();
+        yield session.endSession();
+        return result;
+    }
+    catch (err) {
+        yield session.abortTransaction();
+        yield session.endSession();
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, err.message);
+    }
+});
+// Function to check and cancel expired bookings
+const checkAndCancelExpiredBookings = () => __awaiter(void 0, void 0, void 0, function* () {
+    const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+    const expiredBookings = yield Booking_model_1.Booking.find({
+        createdAt: { $lt: thirtyMinutesAgo },
+        isConfirmed: 'unconfirmed'
+    });
+    for (const booking of expiredBookings) {
+        yield cancelExpiredBooking(booking);
+    }
+});
 const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { slots, room, userId } = payload;
     //checking if room exists
@@ -60,10 +93,18 @@ const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, funct
         if (!updateSlots) {
             throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Failed to booked the slots');
         }
-        const newPayload = Object.assign(Object.assign({}, payload), { totalAmount });
+        // Set initial confirmation status to unconfirmed
+        const newPayload = Object.assign(Object.assign({}, payload), { totalAmount, isConfirmed: 'unconfirmed' });
         const result = yield Booking_model_1.Booking.create([newPayload], { session });
         yield session.commitTransaction();
         yield session.endSession();
+        // Schedule the cancellation check
+        setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+            const booking = yield Booking_model_1.Booking.findById(result[0]._id);
+            if (booking && booking.isConfirmed === 'unconfirmed') {
+                yield cancelExpiredBooking(booking);
+            }
+        }), 30 * 60 * 1000); // 30 minutes
         return result[0];
     }
     catch (err) {
@@ -74,6 +115,13 @@ const createBookingIntoDB = (payload) => __awaiter(void 0, void 0, void 0, funct
 });
 const confirmBookingWithAmarpay = (bookingId) => __awaiter(void 0, void 0, void 0, function* () {
     const booking = yield Booking_model_1.Booking.findById(bookingId);
+    if (!booking) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Booking not found');
+    }
+    ;
+    if (booking.isConfirmed === Booking_constant_1.ConfirmState.cancelled) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Booking already cancelled!!!');
+    }
     const transactionId = `TXN-RR-${Date.now()}`;
     const paymentData = {
         transactionId,
@@ -91,6 +139,10 @@ const confirmBookingWithStripe = (bookingId) => __awaiter(void 0, void 0, void 0
     const booking = yield Booking_model_1.Booking.findById(bookingId).populate('room');
     if (!booking) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Booking not found');
+    }
+    ;
+    if (booking.isConfirmed === Booking_constant_1.ConfirmState.cancelled) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, 'Booking already cancelled!!!');
     }
     const lineItem = {
         price_data: {
@@ -267,4 +319,5 @@ exports.BookingServices = {
     cancelBookingFromDB,
     approveBooking,
     rejectBooking,
+    checkAndCancelExpiredBookings,
 };

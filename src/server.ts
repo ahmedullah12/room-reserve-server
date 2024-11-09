@@ -2,12 +2,15 @@ import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
 import { Server } from 'http';
+import { cronJobs } from './app/utils/cronJobs';
 
 let server: Server;
 
 async function main() {
   try {
     await mongoose.connect(config.db_url as string);
+    cronJobs.setupBookingCronJobs();
+    await cronJobs.checkUnprocessedBookings();
 
     server = app.listen(config.port, () => {
       console.log(`Server running on  ${config.port}`);
