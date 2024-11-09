@@ -6,6 +6,10 @@ const handleDuplicateError = (err: any): TGenericErrorResponse => {
   const matchPath = err.message.match(regex);
   const extractedPath = matchPath && matchPath[1];
 
+  const userFriendlyMessage = extractedPath
+  ? `${extractedPath.charAt(0).toUpperCase() + extractedPath.slice(1)} already exists`
+  : 'Duplicate key error';
+
   const errorMessages: TErrorSource = [
     {
       path: extractedPath,
@@ -16,7 +20,7 @@ const handleDuplicateError = (err: any): TGenericErrorResponse => {
   const statusCode = 400;
   return {
     statusCode,
-    message: err.message,
+    message: userFriendlyMessage,
     errorMessages,
   };
 };
