@@ -14,7 +14,11 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'https://roomreservee.netlify.app'],
+    origin: [
+      'http://localhost:5173',
+      'https://roomreservee.netlify.app',
+      'https://room-reserve-client.vercel.app',
+    ],
     credentials: true,
   }),
 );
