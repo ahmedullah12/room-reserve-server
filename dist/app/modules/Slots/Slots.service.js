@@ -47,6 +47,18 @@ const createSlotsIntoDB = (payload) => __awaiter(void 0, void 0, void 0, functio
         slotIntervals.push({ startTime: slotStartTime, endTime: slotEndTime });
         currentTime = slotEndTime;
     }
+    // Checking if any of the slots already exist
+    const existingSlots = yield Slots_model_1.Slot.find({
+        room,
+        date,
+        startTime: { $in: slotIntervals.map((slot) => slot.startTime) },
+    });
+    if (existingSlots.length > 0) {
+        const existingSlotTimes = existingSlots
+            .map((slot) => `${slot.startTime} - ${slot.endTime}`)
+            .join(', ');
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, `One or more slots already exist for the given room, date, and time range: ${existingSlotTimes}`);
+    }
     //creating slots
     const createSlotsPromises = slotIntervals.map((slot) => __awaiter(void 0, void 0, void 0, function* () {
         const newSlot = {
@@ -77,7 +89,8 @@ const getAvailableSlotsFromDB = (query) => __awaiter(void 0, void 0, void 0, fun
     const result = yield slotQuery.modelQuery;
     const meta = yield slotQuery.countTotal();
     return {
-        result, meta
+        result,
+        meta,
     };
 });
 const updateSlotIntoDB = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -105,7 +118,6 @@ const deleteSlotFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () 
     if (!isSlotExists) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'Slot not found');
     }
-    ;
     const result = yield Slots_model_1.Slot.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
     return result;
 });

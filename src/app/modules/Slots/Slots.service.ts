@@ -46,6 +46,23 @@ const createSlotsIntoDB = async (payload: TSlots) => {
     currentTime = slotEndTime;
   }
 
+  // Checking if any of the slots already exist
+  const existingSlots = await Slot.find({
+    room,
+    date,
+    startTime: { $in: slotIntervals.map((slot) => slot.startTime) },
+  });
+
+  if (existingSlots.length > 0) {
+    const existingSlotTimes = existingSlots
+      .map((slot) => `${slot.startTime} - ${slot.endTime}`)
+      .join(', ');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `One or more slots already exist for the given room, date, and time range: ${existingSlotTimes}`,
+    );
+  }
+
   //creating slots
   const createSlotsPromises = slotIntervals.map(async (slot) => {
     const newSlot = {
@@ -77,11 +94,15 @@ const getAvailableSlotsFromDB = async (query: Record<string, unknown>) => {
 
   // by default searchCriteria is emply object , so should get all the data
   // const result = await Slot.find(searchCriteria).populate('room');
-  const slotQuery = new QueryBuilder(Slot.find(searchCriteria).populate('room'), query).paginate();
+  const slotQuery = new QueryBuilder(
+    Slot.find(searchCriteria).populate('room'),
+    query,
+  ).paginate();
   const result = await slotQuery.modelQuery;
   const meta = await slotQuery.countTotal();
   return {
-    result, meta
+    result,
+    meta,
   };
 };
 
@@ -102,7 +123,7 @@ const updateSlotIntoDB = async (id: string, payload: Partial<TSlots>) => {
     if (endHour - startHour !== 1 || startMinute !== endMinute) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        'Invalid time difference. The difference between startTime and endTime should be exactly one hour.'
+        'Invalid time difference. The difference between startTime and endTime should be exactly one hour.',
       );
     }
   }
@@ -119,7 +140,7 @@ const deleteSlotFromDB = async (id: string) => {
 
   if (!isSlotExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Slot not found');
-  };
+  }
 
   const result = await Slot.findByIdAndUpdate(
     id,
