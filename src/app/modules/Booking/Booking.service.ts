@@ -191,8 +191,8 @@ const confirmBookingWithStripe = async (bookingId: string) => {
     payment_method_types: ['card'],
     line_items: [lineItem],
     mode: 'payment',
-    success_url: `http://localhost:5173/checkout/${bookingId}`,
-    cancel_url: `http://localhost:5173/checkout/${bookingId}`,
+    success_url: `https://room-reserve-client.vercel.app/checkout/${bookingId}`,
+    cancel_url: `https://room-reserve-client.vercel.app/checkout/${bookingId}`,
     metadata: { bookingId },
   });
 
