@@ -17,20 +17,23 @@ const Booking_model_1 = require("../Booking/Booking.model");
 const AppError_1 = __importDefault(require("../../error/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
 const User_model_1 = require("../User/User.model");
-const getUsersBookingsFromDB = (user) => __awaiter(void 0, void 0, void 0, function* () {
+const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
+const getUsersBookingsFromDB = (user, query) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = user;
     //checking if user exists
     const isUserExists = (yield User_model_1.User.isUserExistByEmail(email));
     if (!isUserExists) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User doesn't exists");
     }
-    const result = yield Booking_model_1.Booking.find({ userId: isUserExists._id }, { user: 0 })
+    const bookingQuery = new QueryBuilder_1.default(Booking_model_1.Booking.find({ userId: isUserExists._id }, { user: 0 })
         .populate({
         path: 'slots',
         options: { skipIsBookedCheck: true },
     })
-        .populate('room');
-    return result;
+        .populate('room'), query);
+    const result = yield bookingQuery.modelQuery;
+    const meta = yield bookingQuery.countTotal();
+    return { result, meta };
 });
 exports.MyBookingServices = {
     getUsersBookingsFromDB,

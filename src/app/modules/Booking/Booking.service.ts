@@ -209,7 +209,7 @@ const getAllBookingsFromDB = async (query: Record<string, unknown>) => {
       .populate('room')
       .populate('userId'),
     query,
-  ).paginate();
+  ).paginate().sort();
 
   const result = await bookingQuery.modelQuery;
   const meta = await bookingQuery.countTotal();

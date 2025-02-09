@@ -1,20 +1,23 @@
-import httpStatus from "http-status";
-import sendResponse from "../../utils/sendResponse";
-import { MyBookingServices } from "./MyBooking.service";
-import catchAsync from "../../utils/catchAsync";
+import httpStatus from 'http-status';
+import sendResponse from '../../utils/sendResponse';
+import { MyBookingServices } from './MyBooking.service';
+import catchAsync from '../../utils/catchAsync';
 
-const getUsersBookings = catchAsync(async(req, res) => {
+const getUsersBookings = catchAsync(async (req, res) => {
+  const { result, meta } = await MyBookingServices.getUsersBookingsFromDB(
+    req.user,
+    req.query,
+  );
 
-    const result = await MyBookingServices.getUsersBookingsFromDB(req.user);
-
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "User bookings retrieved successfully",
-        data: result,
-    })
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User bookings retrieved successfully',
+    data: result,
+    meta,
+  });
 });
 
 export const MyBookingController = {
-    getUsersBookings
-}
+  getUsersBookings,
+};
